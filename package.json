@@ -1,0 +1,23 @@
+{
+  "name": "midi_controller_audio_video",
+  "version": "1.0.0",
+  "description": "midi_controller",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bluemi/midi_controller_audio_video.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bluemi/midi_controller_audio_video/issues"
+  },
+  "homepage": "https://github.com/Bluemi/midi_controller_audio_video#readme",
+  "dependencies": {
+    "http-server": "^0.10.0"
+  }
+}
