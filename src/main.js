@@ -2,10 +2,8 @@ console.log("hello world");
 
 function onMidiMessage(event)
 {
-	console.log(
-		event.target.name,
-		event.data,
-		event.receivedTime);
+    document.getElementById('midiMsg').value = event.target.name + " " + event.data + " " + event.receivedTime;
+    console.log(event.receivedTime);
 }
 
 function midiSuccess(midi)
@@ -13,7 +11,7 @@ function midiSuccess(midi)
 	console.log("Midi Success :D");
 
 	let inputs = midi.inputs;
-	for (var input of inputs.values()) {
+	for (let input of inputs.values()) {
 		input.onmidimessage = onMidiMessage;
 	}
 }
