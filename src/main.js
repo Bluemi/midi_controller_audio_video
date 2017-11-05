@@ -1,4 +1,41 @@
-console.log("hello world");
+const samples = [];
+const playButtons = [];
+
+function onAddSamples() {
+    let selectedFile = document.getElementById('sample').files[0];
+    samples.push(addSample(selectedFile, '#waveform'));
+}
+
+function onSampleUploaded() {
+    let selectedFile = document.getElementById('sample').files[0];
+    console.log(selectedFile);
+}
+
+function addSample(url, waveId) {
+    let element = document.createElement('div');
+    document.querySelector(waveId).appendChild(element);
+
+    let waveSurfer = WaveSurfer.create({
+        container: element,
+        waveColor: 'red',
+        progressColor: 'purple',
+        hideScrollbar: true
+    });
+
+    waveSurfer.loadBlob(url);
+    console.log('Sample added');
+
+    let button = document.createElement('button');
+    button.innerHTML="Play / Pause";
+
+    button.onclick = function () {
+        waveSurfer.playPause();
+    }
+
+    document.querySelector(waveId).appendChild(button);
+
+    return waveSurfer;
+}
 
 function onMidiMessage(event)
 {

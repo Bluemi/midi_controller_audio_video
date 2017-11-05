@@ -1,10 +1,15 @@
 <html>
 	<head>
 		<Title> Midi Controller </Title>
-		<script src="./src/main.js"></script>
 	</head>
 	<body>
-		<textarea id="midiMsg" rows="3" cols="20">
-		</textarea>
-	</body>
+        <input onchange="onSampleUploaded()" type='file' id="sample" />
+        <button onclick="onAddSamples()">
+            Add
+        </button>
+        <div id="waveform"></div>
+
+        <script src="node_modules/wavesurfer.js/dist/wavesurfer.js"></script>
+        <script src="./src/main.js"></script>
+    </body>
 </html>
