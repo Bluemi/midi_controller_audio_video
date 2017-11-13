@@ -28,9 +28,9 @@ function addSample(url, waveId) {
     let button = document.createElement('button');
     button.innerHTML="Play / Pause";
 
-    button.onclick = function () {
-        waveSurfer.playPause();
-    }
+	/*button.onclick = function () {
+		waveSurfer.playPause();
+		}*/
 
     document.querySelector(waveId).appendChild(button);
 
