@@ -1,17 +1,42 @@
 let context;
-let buffers = [];
+let tracks = [];
 
 window.addEventListener('load', init, false);
 function init() {
-  try {
-    // Fix up for prefixing
-    window.AudioContext = window.AudioContext||window.webkitAudioContext;
-    context = new AudioContext();
-  }
-  catch(e) {
-    alert('Web Audio API is not supported in this browser');
-  }
+    try {
+        // Fix up for prefixing
+        window.AudioContext = window.AudioContext||window.webkitAudioContext;
+        context = new AudioContext();
+    }
+    catch(e) {
+        alert('Web Audio API is not supported in this browser');
+    }
 }
+
+
+class Track{
+    constructor(context, title, buffer, ticks){
+        this.title = title;
+        this.ticks = ticks;
+        this.buffer = buffer;
+        this.context = context;
+        console.log(context);
+    }
+
+    play() {
+        for (let i = 0; i < this.ticks.length; i++) {
+            let source = this.context.createBufferSource();
+            source.buffer = this.buffer;
+            source.connect(this.context.destination);
+            if (this.ticks[i] > 0) {
+                source.start(this.context.currentTime+i*0.2);
+            }
+        }
+    }
+}
+
+let i = 0;
+let ticks_list = [[0,0,1,0,0], [1,0,0,0,1], [0,1,0,1,0]];
 
 function loadSampleBuffer(url) {
   let request = new XMLHttpRequest();
@@ -20,37 +45,32 @@ function loadSampleBuffer(url) {
 
   // Decode asynchronously
   request.onload = function() {
-    context.decodeAudioData(request.response, function(buffer) {
-	  buffers.push(buffer);
+      context.decodeAudioData(request.response, function(buffer) {
+	  tracks.push(new Track(context, "test"+i, buffer, ticks_list[i]));
+	  console.log(i)
+	  i++;
     }, function(e) {alert("error: " + e)});
-  }
+  };
   request.send();
-}
-
-
-function playSound(buffer) {
-	var source = context.createBufferSource(); // creates a sound source
-	source.buffer = buffer;	                   // tell the source which sound to play
-	source.connect(context.destination);       // connect the source to the context's destination (the speakers)
-	source.start(context.currentTime + 1, 0); 
-}											   // note: on older systems, may have to use deprecated noteOn(time);
-
-function onButtonSnare() {
-	playSound(buffers[0]);
-}
-
-function onButtonKick() {
-	playSound(buffers[1]);
-}
-
-function onButtonHiHat() {
-	playSound(buffers[2]);
-}
+}	// note: on older systems, may have to use deprecated noteOn(time);
 
 loadSampleBuffer("./res/Snare.mp3");
 loadSampleBuffer("./res/Kick.mp3");
 loadSampleBuffer("./res/HiHat_open.mp3");
 
+function onButtonSnare() {
+    for (let i = 0; i < tracks.length; i++) {
+        tracks[i].play();
+    }
+}
+
+function onButtonKick() {
+    tracks[1].play();
+}
+
+function onButtonHiHat() {
+    tracks[2].play();
+}
 // console.log("hello world");
 
 // function onMidiMessage(event)
