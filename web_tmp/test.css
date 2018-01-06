@@ -1,0 +1,23 @@
+body {
+	margin: 40px;
+	background-color: lightgrey;
+}
+
+.frame-container {
+	padding: 3px;
+	display: grid;
+	grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
+	grid-gap: 2px;
+	background-color: #666;
+	float: left;
+}
+
+.sample {
+	display: block;
+	white-space: nowrap;
+	height: 40px;
+	width: 40px;
+	background-color: #999;
+	border-radius: 2px;
+	padding: 0 0
+}
