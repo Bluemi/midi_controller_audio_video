@@ -12,6 +12,15 @@ body {
 	float: left;
 }
 
+.sample-container {
+	padding: 3px;
+	display: grid;
+	grid-template-columns: 40px 40px 40px 40px 40px 40px 40px;
+	grid-gap: 2px;
+	background-color: #666;
+	float: left;
+}
+
 .sample {
 	display: block;
 	white-space: nowrap;
@@ -21,3 +30,34 @@ body {
 	border-radius: 2px;
 	padding: 0 0
 }
+
+.addableSample {
+	display: block;
+	white-space: nowrap;
+	height: 40px;
+	width: 40px;
+	background-color: #999;
+	border-radius: 2px;
+	padding: 0 0
+}
+
+.addableSample .addableSampleButton {
+	background-color: aqua;
+	display: block;
+	height: 40px;
+	width: 40px;
+	border-radius: 1px;
+	padding: 0 0;
+}
+
+.addableSampleButton:active, .addableSampleButton:focus {
+	background-color: #666666;
+	border: solid darkslategray;
+	outline: none;
+	pointer-events: none;
+}
+
+.addableSample .addableSampleButton:hover{
+	background-color: dodgerblue;
+}
+
