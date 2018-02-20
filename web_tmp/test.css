@@ -3,21 +3,34 @@ body {
 	background-color: lightgrey;
 }
 
-.frame-container {
-	padding: 3px;
-	display: grid;
-	grid-template-columns: 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
-	grid-gap: 2px;
-	background-color: #666;
-	float: left;
+#loop-panel {
+	display: flex;
+  	justify-content: center;
+  	background-color: #999;
+	width: 704px;
+	margin: 0 auto;
+	flex-wrap: wrap;
+}
+
+#track-panel {
+
+}
+
+#effect-panel {
+
+}
+
+#body-panel-group {
+}
+
+#loop-panel > div {
 }
 
 .sample {
-	display: block;
-	white-space: nowrap;
-	height: 40px;
-	width: 40px;
-	background-color: #999;
-	border-radius: 2px;
-	padding: 0 0
+  background-color: #f1f1f1;
+  width: 40px;
+  height: 40px;
+  margin: 2px;
+  text-align: center;
+  line-height: 50px;
 }
