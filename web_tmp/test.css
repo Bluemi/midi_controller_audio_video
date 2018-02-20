@@ -23,6 +23,7 @@ body {
 	display: flex;
 	justify-content: center;
 	margin: 0px;
+	width: 978px
 }
 
 .flex-panel {
@@ -77,4 +78,20 @@ body {
 #play-button {
 	margin-top: 10px;
 	margin-left: 1px;
+}
+
+#audio-main-group {
+	display: flex;
+	justify-content: center;
+	margin: 0px;
+}
+
+#visualisation-screen {
+	width: 320px;
+	height: 240px;
+	background-color: #333;
+	/*border: 1px solid red;*/
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
 }
