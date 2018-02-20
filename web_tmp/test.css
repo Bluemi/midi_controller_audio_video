@@ -43,6 +43,7 @@ body {
 
 .addableSample .addableSampleButton {
 	background-color: aqua;
+	border: 1px groove;
 	display: block;
 	height: 40px;
 	width: 40px;
