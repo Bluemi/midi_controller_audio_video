@@ -5,28 +5,28 @@ body {
 
 #loop-panel {
 	background-color: #999;
-	width: 704px;
+	width: 706px;
 }
 
 #track-panel {
 	background-color: #999;
-	width: 176px;
+	width: 126px;
+	align-content: left;
 }
 
 #effect-panel {
 	background-color: #999;
-	width: 176px;
+	width: 134px;
 }
 
 #body-panel-group {
-	border: 1px solid red;
 	display: flex;
 	justify-content: center;
-	/*width: 100%;*/
 	margin: 0px;
 }
 
 .flex-panel {
+	border: 1px solid black;
 	display: flex;
 	justify-content: center;
 	margin-left: 2px;
@@ -37,11 +37,38 @@ body {
 #loop-panel > div {
 }
 
+#add-button {
+	width: 40px;
+}
+
 .sample {
 	background-color: #f1f1f1;
 	width: 40px;
 	height: 40px;
 	margin: 2px;
+}
+
+.effect {
+	background-color: #f1f1f1;
+	width: 40px;
+	height: 40px;
+	margin: 2px;
 	text-align: center;
-	line-height: 50px;
+}
+
+.track-info {
+	background-color: #aaa;
+	width: 120px;
+	height: 40px;
+	margin: 2px;
+	/*vertical-align: middle;*/
+}
+
+.remove-button {
+	width: 30px;
+	height: 30px;
+	position: relative;
+	top: 50%;
+	transform: translateY(-50%);
+	margin-left: 5px;
 }
