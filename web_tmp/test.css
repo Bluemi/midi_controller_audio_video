@@ -44,12 +44,15 @@ body {
 }
 
 .sample-container {
-	padding: 3px;
-	display: grid;
-	grid-template-columns: 40px 40px 40px 40px 40px 40px 40px;
-	grid-gap: 2px;
+	display: flex;
+	width: 308px;
+       	flex-wrap: wrap;	
+	justify-content: center;
 	background-color: #666;
-	float: left;
+	position: relative;
+	left: 50%;
+	transform: translateX(-50%);
+	margin-bottom: 10px;
 }
 
 .sample {
@@ -106,13 +109,9 @@ body {
 }
 
 .addableSample {
-	display: block;
-	white-space: nowrap;
 	height: 40px;
 	width: 40px;
-	background-color: #999;
-	border-radius: 2px;
-	padding: 0 0
+	margin: 2px;
 }
 
 .addableSample .addableSampleButton {
