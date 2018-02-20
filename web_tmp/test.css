@@ -39,6 +39,7 @@ body {
 
 #add-button {
 	width: 40px;
+	margin-left: 1px;
 }
 
 .sample {
@@ -71,4 +72,9 @@ body {
 	top: 50%;
 	transform: translateY(-50%);
 	margin-left: 5px;
+}
+
+#play-button {
+	margin-top: 10px;
+	margin-left: 1px;
 }
