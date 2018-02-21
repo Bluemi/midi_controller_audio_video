@@ -1,8 +1,8 @@
 console.log("main.js")
 
 let context;
-
 let bufferManager = {};
+let activeSampleId = 0;
 
 window.addEventListener('load', init, false);
 function init() {
@@ -13,7 +13,6 @@ function init() {
 		loadSampleBuffer("./res/Snare.mp3", "snare");
 		loadSampleBuffer("./res/Kick.mp3", "kick");
 		loadSampleBuffer("./res/HiHat_open.mp3", "hihat_open");
-
     }
     catch(e) {
         alert('Web Audio API is not supported in this browser');
@@ -42,6 +41,7 @@ function snare() {
 	source.buffer = bufferManager.snare;
 	source.connect(context.destination);
 	source.start(context.currentTime);
+	activeSampleId = 1
 }
 
 function kick() {
@@ -49,6 +49,7 @@ function kick() {
 	source.buffer = bufferManager.kick
 	source.connect(context.destination);
 	source.start(context.currentTime);
+	activeSampleId = 2
 }
 
 function hihat() {
@@ -56,4 +57,5 @@ function hihat() {
 	source.buffer = bufferManager.hihat_open;
 	source.connect(context.destination);
 	source.start(context.currentTime);
+	activeSampleId = 3
 }
