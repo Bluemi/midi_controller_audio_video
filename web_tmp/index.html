@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>DJ/VJ Anwendung</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<script src="./node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="jquery.js"></script>
+	<script src="./src/main.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+
+<div class="text-center">
+	<h1>Nice nice</h1>
+	<p>Press Add to add a Track.</p>
+</div>
+
+<div class="sample-container">
+	<div class="addableSample">
+		<input id="0" type="image" src="res/images/acoustic-guitar.svg" class="addableSampleButton" onclick="snare()">
+	</div>
+	<div class="addableSample">
+		<input id="1" type="image" src="res/images/accordion.svg" class="addableSampleButton" onclick="kick()">
+	</div>
+	<div class="addableSample">
+		<input id="2" type="image" src="res/images/bell.svg" class="addableSampleButton" onclick="hihat()">
+	</div>
+	<!--
+	<div class="addableSample">
+		<input id="3" type="image" src="res/images/chimes.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="4" type="image" src="res/images/cymbals-1.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="5" type="image" src="res/images/drum-1.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="6" type="image" src="res/images/keyboard.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="7" type="image" src="res/images/saxophone.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="8" type="image" src="res/images/tambourine.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="9" type="image" src="res/images/triangle.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="10" type="image" src="res/images/trumpet.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="11" type="image" src="res/images/electric-guitar-1.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="12" type="image" src="res/images/maracas.svg" class="addableSampleButton">
+	</div>
+	<div class="addableSample">
+		<input id="13" type="image" src="res/images/drumsticks.svg" class="addableSampleButton">
+	</div>
+	-->
+
+</div>
+<!-- Visualisation Screen -->
+<div id="visualisation-screen"></div>
+
+<!-- Audio Main Group -->
+<div id="audio-main-group">
+	<div>
+		<button id="add-button">+</button>
+		<div id="body-panel-group">
+			<div id="track-panel" class="flex-panel"></div>
+			<div id="loop-panel" class="flex-panel"> </div>
+			<div id="effect-panel" class="flex-panel"></div>
+		</div>
+		<button id="play-button">play</button>
+	</div>
+</div>
+
+
+</body>
+</html>
