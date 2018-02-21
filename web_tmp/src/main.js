@@ -3,6 +3,11 @@ let bufferManager = {};
 let activeSampleId = 0;
 let yPos = 0;
 let tracks = {};
+let numberOfTicks = 16;
+let loopVar;
+
+const INTERVAL = 0.2;
+const OFFSET = 0.1;
 
 window.addEventListener('load', init, false);
 function init() {
@@ -64,7 +69,10 @@ function hihat() {
 class Track {
     constructor(title, buffer){
         this.title = title;
-        this.ticks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		this.ticks = [];
+		for (let i = 0; i < numberOfTicks; i++) {
+			this.ticks.push(false);
+		}
         this.buffer = buffer;
     }
 }
@@ -144,6 +152,34 @@ function addTrack() {
 	let sample = idToSample(activeSampleId)
 	tracks[yPos] = new Track(sample, bufferManager[sample])
 	activeSampleId = 0;
+}
+
+function loop() {
+	// wait for loop
+	let loopTime = 0;
+	for (let j = 0; j < numberOfTicks; j++) {
+		loopTime += INTERVAL;
+	}
+	loopVar = window.setInterval(play, loopTime * 1000)
+}
+
+function play() {
+	let t = context.currentTime + OFFSET;
+	for (let k in tracks) {
+		track = tracks[k]
+		for (let tick = 0; tick < track.ticks.length; tick++) {
+			let source = context.createBufferSource();
+			source.buffer = track.buffer;
+			source.connect(context.destination);
+			if (track.ticks[tick] > 0) {
+				source.start(t + tick*INTERVAL);
+			}
+		}
+	}
+}
+
+function stop() {
+	clearInterval(loopVar);
 }
 
 // add gui elements

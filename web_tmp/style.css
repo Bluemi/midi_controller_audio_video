@@ -92,6 +92,16 @@ body {
 	margin-left: 1px;
 }
 
+#loop-button {
+	margin-top: 10px;
+	margin-left: 1px;
+}
+
+#stop-button {
+	margin-top: 10px;
+	margin-left: 1px;
+}
+
 #audio-main-group {
 	display: flex;
 	justify-content: center;
