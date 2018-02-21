@@ -1,6 +1,8 @@
 let context;
 let bufferManager = {};
 let activeSampleId = 0;
+let yPos = 0;
+let tracks = {};
 
 window.addEventListener('load', init, false);
 function init() {
@@ -59,53 +61,101 @@ function hihat() {
 	$("#add-button").prop("disabled", false)
 }
 
-$(document).ready(function() {
-	$("#add-button").click(function() { console.log("hey"); });
-});
+class Track {
+    constructor(title, buffer){
+        this.title = title;
+        this.ticks = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.buffer = buffer;
+    }
+}
+
+function enableTick(y, x) {
+	console.log(y)
+	console.log(tracks)
+	tracks[y].ticks[x] = !tracks[y].ticks[x];
+}
+
+function removeTrack(y) {
+	delete tracks[y]
+}
+
+function addGui(addButton) {
+	for (var i = 0; i < 16; i++) {
+		var sample= $("<div class=\"sample\" id=\"cell-" + yPos + "-" + i + "\"></div>")
+		sample.data("yPos", yPos);
+		sample.data("xPos", i);
+		sample.data("enabled", false);
+		$("#loop-panel").append(sample);
+		$("#cell-" + yPos + "-" + i).click(function() {
+			$(this).data("enabled", ! $(this).data("enabled"));
+			if ($(this).data("enabled")) {
+				$(this).css({ background: "red"})
+			} else {
+				$(this).css({ background: "white"})
+			}
+			enableTick($(this).data("yPos"), $(this).data("xPos"));
+		});
+	}
+	var removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>")
+	removeButton.data("yPos", yPos)
+	removeButton.click(function() {
+
+		var y = $(this).data("yPos")
+
+		removeTrack(y)
+
+		// remove samples
+		$("[id^='cell-" + y + "-']").remove();
+
+		// remove effects
+		$(".effect").filter(function(index, element) { return $(element).data("yPos") == y; }).remove()
+
+		// remove track panel
+		$(this).parent().remove();
+	});
+
+	var trackPanel = $("<div class=\"track-info\"></div>")
+	trackPanel.append(removeButton)
+	$("#track-panel").append(trackPanel)
+	for (var i = 0; i < 3; i++) {
+		var effect = $("<div class=\"effect\"></div>")
+		effect.data("yPos", yPos)
+		$("#effect-panel").append(effect)
+	}
+	yPos++
+	addButton.prop("disabled", true)
+}
+
+function idToSample(id) {
+	switch (id) {
+		case 1:
+			return "snare";
+		case 2:
+			return "kick";
+		case 3:
+			return "hihat_open";
+		default:
+			return "";
+
+	}
+}
+
+function addTrack() {
+	let sample = idToSample(activeSampleId)
+	tracks[yPos] = new Track(sample, bufferManager[sample])
+	activeSampleId = 0;
+}
 
 // add gui elements
 $(document).ready(function() {
 	$("#add-button").click(function() {
-		console.log("addbutton click");
-		for (var i = 0; i < 16; i++) {
-			$("#loop-panel").append("<div class=\"sample\" id=\"cell-" + yPos + "-" + i + "\"></div>")
-			$("#cell-" + yPos + "-" + i).click(function() {
-				console.log("hey " + $(this).attr('id'))
-				$(this).css({ background: "red"})
-			});
-		}
-		var removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>")
-		removeButton.data("yPos", yPos)
-		removeButton.click(function() {
-
-			var y = $(this).data("yPos")
-
-			// remove samples
-			$("[id^='cell-" + y + "-']").remove();
-
-			// remove effects
-			$(".effect").filter(function(index, element) { return $(element).data("yPos") == y; }).remove()
-
-			// remove track panel
-			$(this).parent().remove();
-		});
-
-		var trackPanel = $("<div class=\"track-info\"></div>")
-		trackPanel.append(removeButton)
-		$("#track-panel").append(trackPanel)
-		for (var i = 0; i < 3; i++) {
-			var effect = $("<div class=\"effect\"></div>")
-			effect.data("yPos", yPos)
-			$("#effect-panel").append(effect)
-		}
-		yPos++
-		$(this).prop("disabled", true)
+		addTrack()
+		addGui($(this));
 	});
 
 	yPos = 0
 
 	$(".addableSampleButton").focusout(function() {
-		activeSampleId = 0;
 		let addButton = $("#add-button")
 		if (! addButton.is(":hover")) {
 			addButton.prop("disabled", true)
