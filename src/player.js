@@ -8,6 +8,7 @@ class Player {
 		this.tracks = {};
 		this.activeSampleId = 0;
 		this.loopInterval = 0;
+		this.yPos = 0;
 	}
 
     static idToSample(id) {
@@ -43,8 +44,9 @@ class Player {
 
     addTrack() {
         let sample = Player.idToSample(this.activeSampleId);
-        this.tracks[yPos] = new Track(sample, this.bufferManager[sample]);
+        this.tracks[this.yPos] = new Track(sample, this.bufferManager[sample]);
         this.activeSampleId = 0;
+		this.yPos++;
     }
 
     removeTrack(y) {
