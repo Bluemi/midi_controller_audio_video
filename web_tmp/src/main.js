@@ -66,17 +66,6 @@ function hihat() {
 	$("#add-button").prop("disabled", false)
 }
 
-class Track {
-    constructor(title, buffer){
-        this.title = title;
-		this.ticks = [];
-		for (let i = 0; i < numberOfTicks; i++) {
-			this.ticks.push(false);
-		}
-        this.buffer = buffer;
-    }
-}
-
 function enableTick(y, x) {
 	console.log(y)
 	console.log(tracks)
