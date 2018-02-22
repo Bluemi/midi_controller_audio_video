@@ -3,12 +3,26 @@ const OFFSET = 0.1;
 
 class Player {
 	constructor(context) {
+        this.context = context;
 		this.bufferManager = {};
-		this.tracks = {}
+		this.tracks = {};
 		this.activeSampleId = 0;
-		this.loopInterval;
-		this.context = context;
+		this.loopInterval = 0;
 	}
+
+    static idToSample(id) {
+        switch (id) {
+            case 1:
+                return "snare";
+            case 2:
+                return "kick";
+            case 3:
+                return "hihat_open";
+            default:
+                return "";
+
+        }
+    }
 
 	loadSampleBuffer(url, name) {
 		let request = new XMLHttpRequest();
@@ -26,13 +40,19 @@ class Player {
 		};
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
-	
+
+    addTrack() {
+        let sample = Player.idToSample(this.activeSampleId);
+        this.tracks[yPos] = new Track(sample, this.bufferManager[sample]);
+        this.activeSampleId = 0;
+    }
+
+    removeTrack(y) {
+        delete this.tracks[y]
+    }
+
 	enableTick(y, x) {
 		this.tracks[y].ticks[x] = !this.tracks[y].ticks[x];
-	}
-
-	removeTrack(y) {
-		delete this.tracks[y]
 	}
 
 	snare() {
@@ -46,14 +66,14 @@ class Player {
 
 	kick() {
 		let source = this.context.createBufferSource();
-		source.buffer = this.bufferManager.kick
+		source.buffer = this.bufferManager.kick;
 		source.connect(this.context.destination);
 		source.start(this.context.currentTime);
 		this.activeSampleId = 2;
 		$("#add-button").prop("disabled", false)
 	}
 
-	hihat() {
+	hiHat() {
 		let source = this.context.createBufferSource();
 		source.buffer = this.bufferManager.hihat_open;
 		source.connect(this.context.destination);
@@ -62,13 +82,22 @@ class Player {
 		$("#add-button").prop("disabled", false)
 	}
 
-	addTrack() {
-		let sample = this.idToSample(this.activeSampleId)
-		this.tracks[yPos] = new Track(sample, this.bufferManager[sample])
-		this.activeSampleId = 0;
-	}
+    play() {
+        let t = this.context.currentTime + OFFSET;
+        for (let k in this.tracks) {
+            let track = this.tracks[k];
+            for (let tick = 0; tick < track.ticks.length; tick++) {
+                let source = this.context.createBufferSource();
+                source.buffer = track.buffer;
+                source.connect(this.context.destination);
+                if (track.ticks[tick] > 0) {
+                    source.start(t + tick*INTERVAL);
+                }
+            }
+        }
+    }
 
-	loop() {
+    loop() {
 		this.play();
 
 		// wait for loop
@@ -80,36 +109,7 @@ class Player {
 		this.loopInterval = setInterval(function() { that.play() }, loopTime * 1000)
 	}
 
-	play() {
-		let t = this.context.currentTime + OFFSET;
-		for (let k in this.tracks) {
-			let track = this.tracks[k]
-			for (let tick = 0; tick < track.ticks.length; tick++) {
-				let source = this.context.createBufferSource();
-				source.buffer = track.buffer;
-				source.connect(this.context.destination);
-				if (track.ticks[tick] > 0) {
-					source.start(t + tick*INTERVAL);
-				}
-			}
-		}
-	}
-
 	stop() {
 		clearInterval(this.loopInterval);
 	}
-
-	idToSample(id) {
-		switch (id) {
-			case 1:
-				return "snare";
-			case 2:
-				return "kick";
-			case 3:
-				return "hihat_open";
-			default:
-				return "";
-
-		}	
-	}	
 }

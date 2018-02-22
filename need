@@ -1,6 +1,0 @@
-- Player: WebAudioAPI
-	- SampleLoader: WebAudioAPI
-- GUI: Canvas
-	- Controller
-- Midi-Controller
-- Model
