@@ -1,9 +1,11 @@
 class GuiManager {
-	constructor() {
+	constructor(player) {
 		this.yPos = 0;
+		this.player = player;
 	}
 
 	addTrackGui(addButton) {
+		let that_player = this.player;
 		for (let i = 0; i < 16; i++) {
 			let sample= $("<div class=\"sample\" id=\"cell-" + this.yPos + "-" + i + "\"></div>")
 			sample.data("yPos", this.yPos);
@@ -17,7 +19,7 @@ class GuiManager {
 				} else {
 					$(this).css({ background: "white"})
 				}
-				enableTick($(this).data("yPos"), $(this).data("xPos"));
+				that_player.enableTick($(this).data("yPos"), $(this).data("xPos"));
 			});
 		}
 		let removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>")
@@ -26,7 +28,7 @@ class GuiManager {
 
 			let y = $(this).data("yPos")
 
-			removeTrack(y)
+			that_player.removeTrack(y)
 
 			// remove samples
 			$("[id^='cell-" + y + "-']").remove();
@@ -50,7 +52,7 @@ class GuiManager {
 		addButton.prop("disabled", true)
 	}
 
-	getRandomLightColor() {
+	static getRandomLightColor() {
 		var letters = '789ABCD'.split('');
 		var color = '#';
 		for (var i = 0; i < 6; i++ ) {
