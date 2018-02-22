@@ -5,6 +5,7 @@ let yPos = 0;
 let tracks = {};
 let numberOfTicks = 16;
 let loopVar;
+let guiManager = new GuiManager();
 
 const INTERVAL = 0.2;
 const OFFSET = 0.1;
@@ -37,7 +38,7 @@ function loadSampleBuffer(url, name) {
 		}, function(e) {alert("error: " + e)});
 	};
 	request.send();
-}	// note: on older systems, may have to use deprecated noteOn(time);
+}
 
 function snare() {
 	let source = context.createBufferSource();
@@ -76,53 +77,6 @@ function removeTrack(y) {
 	delete tracks[y]
 }
 
-function addGui(addButton) {
-	for (var i = 0; i < 16; i++) {
-		var sample= $("<div class=\"sample\" id=\"cell-" + yPos + "-" + i + "\"></div>")
-		sample.data("yPos", yPos);
-		sample.data("xPos", i);
-		sample.data("enabled", false);
-		$("#loop-panel").append(sample);
-		$("#cell-" + yPos + "-" + i).click(function() {
-			$(this).data("enabled", ! $(this).data("enabled"));
-			if ($(this).data("enabled")) {
-				$(this).css({ background: "red"})
-			} else {
-				$(this).css({ background: "white"})
-			}
-			enableTick($(this).data("yPos"), $(this).data("xPos"));
-		});
-	}
-	var removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>")
-	removeButton.data("yPos", yPos)
-	removeButton.click(function() {
-
-		var y = $(this).data("yPos")
-
-		removeTrack(y)
-
-		// remove samples
-		$("[id^='cell-" + y + "-']").remove();
-
-		// remove effects
-		$(".effect").filter(function(index, element) { return $(element).data("yPos") == y; }).remove()
-
-		// remove track panel
-		$(this).parent().remove();
-	});
-
-	var trackPanel = $("<div class=\"track-info\"></div>")
-	trackPanel.append(removeButton)
-	$("#track-panel").append(trackPanel)
-	for (var i = 0; i < 3; i++) {
-		var effect = $("<div class=\"effect\"></div>")
-		effect.data("yPos", yPos)
-		$("#effect-panel").append(effect)
-	}
-	yPos++
-	addButton.prop("disabled", true)
-}
-
 function idToSample(id) {
 	switch (id) {
 		case 1:
@@ -140,6 +94,7 @@ function idToSample(id) {
 function addTrack() {
 	let sample = idToSample(activeSampleId)
 	tracks[yPos] = new Track(sample, bufferManager[sample])
+	yPos++;
 	activeSampleId = 0;
 }
 
@@ -169,15 +124,11 @@ function play() {
 	}
 }
 
-function stop() {
-	clearInterval(loopVar);
-}
-
 // add gui elements
 $(document).ready(function() {
 	$("#add-button").click(function() {
 		addTrack()
-		addGui($(this));
+		guiManager.addTrackGui($(this));
 	});
 
 	yPos = 0
@@ -189,26 +140,12 @@ $(document).ready(function() {
 		}
 	});
 
-    for (var j = 0; j < 14; j++) {
-        var rand = getRandomLightColor();
+    for (let j = 0; j < 14; j++) {
+        let rand = guiManager.getRandomLightColor();
         $(".sample-container .addableSample #"+j).css("background-color", rand);
 	}
 });
 
-/*function getRandomColor()
-{
-    var color = Math.floor(Math.random() * Math.pow(256, 3)).toString(16);
-    while(color.length < 6) {
-        color = "0" + color;
-    }
-    return "#" + color;
-}*/
-
-function getRandomLightColor() {
-    var letters = 'BCDEF'.split('');
-    var color = '#';
-    for (var i = 0; i < 6; i++ ) {
-        color += letters[Math.floor(Math.random() * letters.length)];
-    }
-    return color;
+function stop() {
+	clearInterval(loopVar);
 }
