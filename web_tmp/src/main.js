@@ -155,6 +155,8 @@ function addTrack() {
 }
 
 function loop() {
+	play();
+
 	// wait for loop
 	let loopTime = 0;
 	for (let j = 0; j < numberOfTicks; j++) {
