@@ -2,11 +2,12 @@ const INTERVAL = 0.2;
 const OFFSET = 0.1;
 
 class Player {
-	constructor(context) {
+	constructor(context, sampleNames) {
         this.context = context;
+        this.sampleNames = sampleNames;
 		this.bufferManager = {};
 		this.tracks = {};
-		this.activeSampleId = 0;
+		this.activeSample = "";
 		this.loopInterval = 0;
 		this.yPos = 0;
 	}
@@ -43,10 +44,9 @@ class Player {
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
     addTrack() {
-        let sample = Player.idToSample(this.activeSampleId);
-        this.tracks[this.yPos] = new Track(sample, this.bufferManager[sample]);
-        this.activeSampleId = 0;
-		this.yPos++;
+        this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample]);
+		this.activeSample = "";
+        this.yPos++;
     }
 
     removeTrack(y) {
@@ -55,42 +55,6 @@ class Player {
 
 	enableTick(y, x) {
 		this.tracks[y].ticks[x] = !this.tracks[y].ticks[x];
-	}
-
-	snare() {
-		let source = this.context.createBufferSource();
-		source.buffer = this.bufferManager.snare;
-		source.connect(this.context.destination);
-		source.start(this.context.currentTime);
-		this.activeSampleId = 1;
-		$("#add-button").prop("disabled", false);
-		$("#snare").show();
-        $("#kick").hide();
-		$("#hithat").hide();
-    }
-
-	kick() {
-		let source = this.context.createBufferSource();
-		source.buffer = this.bufferManager.kick;
-		source.connect(this.context.destination);
-		source.start(this.context.currentTime);
-		this.activeSampleId = 2;
-		$("#add-button").prop("disabled", false);
-        $("#kick").show();
-        $("#snare").hide();
-        $("#hithat").hide();
-	}
-
-	hiHat() {
-		let source = this.context.createBufferSource();
-		source.buffer = this.bufferManager.hihat_open;
-		source.connect(this.context.destination);
-		source.start(this.context.currentTime);
-		this.activeSampleId = 3;
-		$("#add-button").prop("disabled", false);
-        $("#hithat").show();
-        $("#snare").hide();
-        $("#kick").hide();
 	}
 
     play() {
@@ -114,11 +78,10 @@ class Player {
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
         source.start(this.context.currentTime);
-        this.activeSampleId = 4;
+        this.activeSample = sampleName;
         $("#add-button").prop("disabled", false);
-        $("#hithat").show();
-        $("#snare").hide();
-        $("#kick").hide();
+        $("[id^='vid-']").hide();
+        $("#vid-" + sampleName).show();
     }
 
     loop() {
