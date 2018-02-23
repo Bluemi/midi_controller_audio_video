@@ -80,8 +80,12 @@ class Player {
         source.start(this.context.currentTime);
         this.activeSample = sampleName;
         $("#add-button").prop("disabled", false);
-        $("[id^='vid-']").hide();
+        Player.hideAllVids();
         $("#vid-" + sampleName).show();
+    }
+
+    static hideAllVids() {
+        $("[id^='vid-']").hide();
     }
 
     loop() {

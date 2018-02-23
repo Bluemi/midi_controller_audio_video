@@ -34,7 +34,8 @@ $(document).ready(function() {
 	$(".addableSampleButton").focusout(function() {
 		let addButton = $("#add-button");
 		if (! addButton.is(":hover")) {
-			addButton.prop("disabled", true)
+			addButton.prop("disabled", true);
+            Player.hideAllVids();
 		}
 	});
 
