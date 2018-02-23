@@ -6,6 +6,7 @@ class Track {
 				this.ticks.push(false);
 			}
         	this.buffer = buffer;
+			this.sources = [];
     	}
 }
 
