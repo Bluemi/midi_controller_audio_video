@@ -1,5 +1,7 @@
 let context;
-let sampleNames = ["snare", "kick", "hihat"];
+let samples = [new Sample("clap", 0.25), new Sample("crash1", 0.75), new Sample("crash2", 0.5), new Sample("cymbal",0.1),
+    new Sample("hihat",0), new Sample("kick1",0), new Sample("kick2", 1.1), new Sample("ride",0), new Sample("snare1",0),
+        new Sample("snare2",0.5), new Sample("snare3",0), new Sample("special", 0.85), new Sample("tom1",0.1), new Sample("tom2",0.5)];
 let yPos = 0;
 let player;
 let guiManager;
@@ -10,12 +12,12 @@ function init() {
         // Fix up for prefixing
         window.AudioContext = window.AudioContext||window.webkitAudioContext;
         context = new AudioContext();
-        player = new Player(context, sampleNames);
-        DashUtils.addVideos(sampleNames);
+        player = new Player(context, samples);
+        DashUtils.addVideos(samples);
         guiManager = new GuiManager(player);
-        player.loadSampleBuffer("./res/samples/snare1.mp3", "snare");
-        player.loadSampleBuffer("./res/samples/kick1.mp3", "kick");
-        player.loadSampleBuffer("./res/samples/hihat.mp3", "hihat");
+        for (let i in samples) {
+            player.loadSampleBuffer("res/samples/" + samples[i].title + ".mp3", samples[i].title);
+        }
     }
     catch(e) {
         alert('Web Audio API is not supported in this browser');

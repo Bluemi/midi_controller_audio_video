@@ -2,29 +2,15 @@ const INTERVAL = 0.2;
 const OFFSET = 0.1;
 
 class Player {
-	constructor(context, sampleNames) {
+	constructor(context, samples) {
         this.context = context;
-        this.sampleNames = sampleNames;
 		this.bufferManager = {};
 		this.tracks = {};
 		this.activeSample = "";
 		this.loopInterval = 0;
 		this.yPos = 0;
+		this.samples = samples;
 	}
-
-    static idToSample(id) {
-        switch (id) {
-            case 1:
-                return "snare";
-            case 2:
-                return "kick";
-            case 3:
-                return "hihat_open";
-            default:
-                return "";
-
-        }
-    }
 
 	loadSampleBuffer(url, name) {
 		let request = new XMLHttpRequest();
@@ -77,11 +63,19 @@ class Player {
         let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
-        source.start(this.context.currentTime);
+        let sample = this.samples.find(function(s) {
+            if (s.title === sampleName)
+                return s;
+        });
+        source.start(this.context.currentTime + sample.delay);
         this.activeSample = sampleName;
         $("#add-button").prop("disabled", false);
         Player.hideAllVids();
-        $("#vid-" + sampleName).show();
+        let vid = $("#vid-" + sampleName);
+        vid.show();
+        vid = document.getElementById('vid-' + sampleName);
+        vid.currentTime = 0;
+        vid.play();
     }
 
     static hideAllVids() {
