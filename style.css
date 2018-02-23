@@ -151,3 +151,9 @@ body {
 	background-color: dodgerblue;
 }
 
+.mpd-video {
+	overflow: hidden;
+	position: relative;
+	width: 100%;
+	height: 100%
+}

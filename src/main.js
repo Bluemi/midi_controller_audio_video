@@ -1,4 +1,5 @@
 let context;
+let sampleNames = ["snare", "kick", "hihat"];
 let yPos = 0;
 let player;
 let guiManager;
@@ -9,11 +10,12 @@ function init() {
         // Fix up for prefixing
         window.AudioContext = window.AudioContext||window.webkitAudioContext;
         context = new AudioContext();
-	player = new Player(context);
-	guiManager = new GuiManager(player);
-	player.loadSampleBuffer("./res/samples/snare1.mp3", "snare");
-	player.loadSampleBuffer("./res/samples/kick1.mp3", "kick");
-	player.loadSampleBuffer("./res/samples/hihat.mp3", "hihat_open");
+        player = new Player(context, sampleNames);
+        DashUtils.addVideos(sampleNames);
+        guiManager = new GuiManager(player);
+        player.loadSampleBuffer("./res/samples/snare1.mp3", "snare");
+        player.loadSampleBuffer("./res/samples/kick1.mp3", "kick");
+        player.loadSampleBuffer("./res/samples/hihat.mp3", "hihat");
     }
     catch(e) {
         alert('Web Audio API is not supported in this browser');
@@ -32,7 +34,8 @@ $(document).ready(function() {
 	$(".addableSampleButton").focusout(function() {
 		let addButton = $("#add-button");
 		if (! addButton.is(":hover")) {
-			addButton.prop("disabled", true)
+			addButton.prop("disabled", true);
+            Player.hideAllVids();
 		}
 	});
 

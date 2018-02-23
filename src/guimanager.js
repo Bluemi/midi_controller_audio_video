@@ -49,7 +49,8 @@ class GuiManager {
 			$("#effect-panel").append(effect)
 		}
 		this.yPos++;
-		addButton.prop("disabled", true)
+		addButton.prop("disabled", true);   
+		Player.hideAllVids();
 	}
 
 	static getRandomLightColor() {
