@@ -63,8 +63,11 @@ class Player {
 		source.connect(this.context.destination);
 		source.start(this.context.currentTime);
 		this.activeSampleId = 1;
-		$("#add-button").prop("disabled", false)
-	}
+		$("#add-button").prop("disabled", false);
+		$("#snare").show();
+        $("#kick").hide();
+		$("#hithat").hide();
+    }
 
 	kick() {
 		let source = this.context.createBufferSource();
@@ -72,7 +75,10 @@ class Player {
 		source.connect(this.context.destination);
 		source.start(this.context.currentTime);
 		this.activeSampleId = 2;
-		$("#add-button").prop("disabled", false)
+		$("#add-button").prop("disabled", false);
+        $("#kick").show();
+        $("#snare").hide();
+        $("#hithat").hide();
 	}
 
 	hiHat() {
@@ -81,7 +87,10 @@ class Player {
 		source.connect(this.context.destination);
 		source.start(this.context.currentTime);
 		this.activeSampleId = 3;
-		$("#add-button").prop("disabled", false)
+		$("#add-button").prop("disabled", false);
+        $("#hithat").show();
+        $("#snare").hide();
+        $("#kick").hide();
 	}
 
     play() {
@@ -97,6 +106,19 @@ class Player {
                 }
             }
         }
+    }
+
+    // todo add a single playSample function
+    playSample(sampleName) {
+        let source = this.context.createBufferSource();
+        source.buffer = this.bufferManager[sampleName];
+        source.connect(this.context.destination);
+        source.start(this.context.currentTime);
+        this.activeSampleId = 4;
+        $("#add-button").prop("disabled", false);
+        $("#hithat").show();
+        $("#snare").hide();
+        $("#kick").hide();
     }
 
     loop() {
