@@ -4,18 +4,24 @@ const OFFSET = 0.1;
 class Player {
 	constructor(context, samples) {
         this.context = context;
-		this.samples = samples;
         this.bufferManager = {};
-		this.tracks = {};
-		this.activeSample = "";
-		this.loopInterval = 0;
-		this.yPos = 0;
-		this.samples = samples;
+        this.tracks = {};
+        this.samples = samples;
+        this.activeSample = "";
+        this.loopInterval = 0;
         this.irHall = 0;
+        this.yPos = 0;
+
+        for (let i in samples) {
+        	if (samples.hasOwnProperty(i)) {
+                let sample = samples[i];
+                this.loadSampleBuffer("res/samples/" + sample.title + ".mp3", sample.title);
+            }
+		}
 
         // load irHall
         let request = new XMLHttpRequest();
-        request.open('GET', "./res/irHall.ogg", true);
+        request.open('GET', "res/effects/irHall.ogg", true);
         request.responseType = 'arraybuffer';
 
         let _player = this;
@@ -135,20 +141,6 @@ class Player {
         }
 	}
 
-    play() {
-        let t = this.context.currentTime + OFFSET;
-		this.create_audio_nodes();
-        for (let k in this.tracks) {
-            let track = this.tracks[k];
-            for (let tick = 0; tick < track.ticks.length; tick++) {
-				// start track
-                if (track.ticks[tick] > 0) {
-                    track.sources[tick].start(t + tick*INTERVAL);
-                }
-            }
-        }
-    }
-
     // todo add a single playSample function
     playSample(sampleName) {
         let source = this.context.createBufferSource();
@@ -167,6 +159,20 @@ class Player {
         vid = document.getElementById('vid-' + sampleName);
         vid.currentTime = 0;
         vid.play();
+    }
+
+    play() {
+        let t = this.context.currentTime + OFFSET;
+		this.create_audio_nodes();
+        for (let k in this.tracks) {
+            let track = this.tracks[k];
+            for (let tick = 0; tick < track.ticks.length; tick++) {
+				// start track
+                if (track.ticks[tick] > 0) {
+                    track.sources[tick].start(t + tick*INTERVAL);
+                }
+            }
+        }
     }
 
     static hideAllVids() {

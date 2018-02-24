@@ -8,8 +8,8 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="src/jsonutils.js"></script>
 	<script src="src/dashutils.js"></script>
-	<script src="src/sample.js"></script>
 	<script src="src/player.js"></script>
 	<script src="src/track.js"></script>
 	<script src="src/guimanager.js"></script>
@@ -23,50 +23,7 @@
 	<p>Press Add to add a Track.</p>
 </div>
 
-<div class="sample-container">
-	<div class="addableSample">
-		<input id="0" type="image" src="res/images/acoustic-guitar.svg" class="addableSampleButton" onclick="player.playSample('clap')">
-	</div>
-	<div class="addableSample">
-		<input id="1" type="image" src="res/images/accordion.svg" class="addableSampleButton" onclick="player.playSample('crash1')">
-	</div>
-	<div class="addableSample">
-		<input id="2" type="image" src="res/images/bell.svg" class="addableSampleButton" onclick="player.playSample('crash2')">
-	</div>
-	<div class="addableSample">
-		<input id="3" type="image" src="res/images/chimes.svg" class="addableSampleButton" onclick="player.playSample('cymbal')">
-	</div>
-	 <div class="addableSample">
-		<input id="4" type="image" src="res/images/cymbals-1.svg" class="addableSampleButton" onclick="player.playSample('hihat')">
-	</div>
-	<div class="addableSample">
-		<input id="5" type="image" src="res/images/drum-1.svg" class="addableSampleButton" onclick="player.playSample('kick1')">
-	</div>
-	<div class="addableSample">
-		<input id="6" type="image" src="res/images/keyboard.svg" class="addableSampleButton" onclick="player.playSample('kick2')">
-	</div>
-	<div class="addableSample">
-		<input id="7" type="image" src="res/images/saxophone.svg" class="addableSampleButton" onclick="player.playSample('ride')">
-	</div>
-	<div class="addableSample">
-		<input id="8" type="image" src="res/images/tambourine.svg" class="addableSampleButton" onclick="player.playSample('snare1')">
-	</div>
-	<div class="addableSample">
-		<input id="9" type="image" src="res/images/triangle.svg" class="addableSampleButton" onclick="player.playSample('snare2')">
-	</div>
-	<div class="addableSample">
-		<input id="10" type="image" src="res/images/trumpet.svg" class="addableSampleButton" onclick="player.playSample('snare3')">
-	</div>
-	<div class="addableSample">
-		<input id="11" type="image" src="res/images/electric-guitar-1.svg" class="addableSampleButton" onclick="player.playSample('special')">
-	</div>
-	<div class="addableSample">
-		<input id="12" type="image" src="res/images/maracas.svg" class="addableSampleButton" onclick="player.playSample('tom1')">
-	</div>
-	<div class="addableSample">
-		<input id="13" type="image" src="res/images/drumsticks.svg" class="addableSampleButton" onclick="player.playSample('tom2')">
-	</div>
-
+<div id="sample-container">
 </div>
 <!-- Visualisation Screen -->
 <div id="visualisation-screen">

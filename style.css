@@ -43,10 +43,10 @@ body {
 	margin-left: 1px;
 }
 
-.sample-container {
+#sample-container {
 	display: flex;
 	width: 308px;
-       	flex-wrap: wrap;	
+    flex-wrap: wrap;
 	justify-content: center;
 	background-color: #666;
 	position: relative;
@@ -131,7 +131,7 @@ body {
 }
 
 .addableSample .addableSampleButton {
-	background-color: aqua;
+	background-color: lightgray;
 	border: 1px groove;
 	display: block;
 	height: 40px;

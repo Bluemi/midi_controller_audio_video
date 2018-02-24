@@ -1,7 +1,28 @@
 class GuiManager {
-	constructor(player) {
+	constructor(player, samples) {
 		this.yPos = 0;
 		this.player = player;
+		this.samples = samples;
+	}
+
+	static addSampleGui() {
+		for (let i in samples) {
+		    if (samples.hasOwnProperty(i)) {
+                let sample = samples[i];
+                let div = document.createElement("div");
+                div = $(div).addClass("addableSample");
+                let input = document.createElement("input");
+                input = $(input).attr(
+                    { 	id: i,
+                        type: "image",
+                        src: "res/images/" + sample.title + ".svg",
+                        class: "addableSampleButton",
+                        onclick: "player.playSample('" + sample.title + "')"
+                    });
+                div.append(input);
+                $("#sample-container").append(div);
+            }
+        }
 	}
 
 	addTrackGui(addButton) {
