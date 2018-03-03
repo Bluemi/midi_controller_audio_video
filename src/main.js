@@ -44,3 +44,7 @@ function init() {
         });
     });
 }
+
+function effect_clicked(y, x) {
+	player.effect_clicked(y, x);
+}
