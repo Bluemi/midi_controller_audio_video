@@ -44,7 +44,11 @@ function init() {
         });
 		document.addEventListener("keydown", function(event) {
 			if (event.keyCode === 65) {
-				$("#add-button").click();
+				let aBtn = $("#add-button");
+				if (!aBtn.prop("disabled")) {
+					guiManager.addTrackPanelColumn(aBtn);
+					player.addTrack();
+				}
 			}
 		});
     });

@@ -10,7 +10,7 @@ body {
 
 #track-panel {
 	background-color: #999;
-	width: 126px;
+	width: 116px;
 	align-content: left;
 }
 
@@ -23,7 +23,7 @@ body {
 	display: flex;
 	justify-content: center;
 	margin: 0px;
-	width: 978px
+	width: 968px
 }
 
 .flex-panel {
