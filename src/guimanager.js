@@ -48,7 +48,7 @@ class GuiManager {
                 player.enableTick($(this).data("yPos"), $(this).data("xPos"));
             }
         }
-		let removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>");
+		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">x</p></div>");
 		removeButton.data("yPos", this.yPos);
 		removeButton.click(function() {
 
@@ -73,7 +73,23 @@ class GuiManager {
         });
 		trackInfo.attr("id", "track-info-"+this.yPos);
         trackInfo.append(removeButton);
-        $("#track-panel").append(trackInfo);
+		$("#track-panel").append(trackInfo);
+		let muteButton = $("<div id=\"mute-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">m</p></div>");
+		muteButton.data("yPos", this.yPos);
+		muteButton.data("muted", false);
+		muteButton.click(function() {
+			let t = $(this);
+			player.muteTrack(t.data("yPos"));
+			let muted = !t.data("muted");
+			if (muted) {
+				t.css({ background: "#bbbbbb" });
+			} else {
+				t.css({ background: "#999999" });
+			}
+			t.data("muted", muted);
+		});
+
+        trackInfo.append(muteButton);
 
 		for (let i = 0; i < 3; i++) {
             let effect = $("<div class=\"effect\"></div>");

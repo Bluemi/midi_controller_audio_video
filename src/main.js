@@ -42,6 +42,11 @@ function init() {
                 Player.hideAllVids();
             }
         });
+		document.addEventListener("keydown", function(event) {
+			if (event.keyCode === 65) {
+				$("#add-button").click();
+			}
+		});
     });
 }
 
