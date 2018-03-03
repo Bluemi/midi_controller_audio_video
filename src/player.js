@@ -4,9 +4,9 @@ const OFFSET = 0.1;
 class Player {
 	constructor(context, samples) {
         this.context = context;
+        this.samples = samples;
         this.bufferManager = {};
         this.tracks = {};
-        this.samples = samples;
         this.activeSample = "";
         this.loopInterval = 0;
         this.irHall = 0;
@@ -53,8 +53,13 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
+	effect_clicked(y, x) {
+		this.tracks[y].effect_clicked(x);
+	}
+
     addTrack() {
         this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample]);
+        this.tracks[this.yPos].sample = samples.find(s => s.title === this.activeSample);
 		this.activeSample = "";
         this.yPos++;
     }
@@ -80,69 +85,83 @@ class Player {
 
 			// Delay -------------------------------------------------
 			// create
-			let delay_size = this.context.createGain();
-			let delay = this.context.createDelay();
-			let delay_value = this.context.createGain();
+			let delay_size = 0;
+			if (track.effect_state[0] > 0) {
+				delay_size = this.context.createGain();
+				let delay = this.context.createDelay();
+				let delay_value = this.context.createGain();
 
-			// settings
-			delay_size.gain.value = 0.4; // size
-			delay.delayTime.value = 0.3; // time
-			delay_value.gain.value = 0.5; // mix
+				// settings
+				delay_size.gain.value = track.effect_state[0] * 0.25; // size
+				delay.delayTime.value = 0.3; // time
+				delay_value.gain.value = 0.2 + track.effect_state[0] * 0.1; // mix
 
-			// connect
-			delay_size.connect(delay);
-			delay.connect(delay_size);
-			delay.connect(delay_value);
-			delay_value.connect(this.context.destination);
+				// connect
+				delay_size.connect(delay);
+				delay.connect(delay_size);
+				delay.connect(delay_value);
+				delay_value.connect(this.context.destination);
+			}
 
 			// Biquad Filter -----------------------------------------
 			// create
-			let gainNode = this.context.createGain();
-			let biquadFilter = this.context.createBiquadFilter();
+			let biquadFilter = 0;
+			if (track.effect_state[1] > 0) {
+				let gainNode = this.context.createGain();
+				biquadFilter = this.context.createBiquadFilter();
 
-			// settings
-			biquadFilter.type = "lowpass"; // type
-			biquadFilter.frequency.value = 5000; // frequency
-			biquadFilter.gain.value = 1; // gain value
-			gainNode.gain.value = 0.3; // mix
+				// settings
+				biquadFilter.type = "lowpass"; // type
+				biquadFilter.frequency.value = 1000 + track.effect_state[1] * 1000; // frequency
+				biquadFilter.gain.value = 1; // gain value
+				gainNode.gain.value = 0.8; // mix
 
-			// connect
-			biquadFilter.connect(gainNode);
-			gainNode.connect(this.context.destination);
+				// connect
+				biquadFilter.connect(gainNode);
+				gainNode.connect(this.context.destination);
+			}
 
 			// Reverb --------------------------------------------
 			// create
-			let reverb = this.context.createConvolver();
-			reverb.buffer = this.irHall;
-			let reverb_gain = this.context.createGain();
+			let reverb = 0;
+			if (track.effect_state[2] > 0) {
+				reverb = this.context.createConvolver();
+				reverb.buffer = this.irHall;
+				let reverb_gain = this.context.createGain();
 
-			// settings
-			reverb_gain.gain.value = 0.5; // mix
+				// settings
+				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
 
-			reverb.connect(reverb_gain);
-			reverb_gain.connect(this.context.destination);
+				reverb.connect(reverb_gain);
+				reverb_gain.connect(this.context.destination);
+			}
 
 			// connect sources
 			for (let s in track.sources) {
 				let src = track.sources[s];
 
-				// Delay
-				src.connect(delay_size);
-
 				// Dry
 				src.connect(this.context.destination);
 
+				// Delay
+				if (track.effect_state[0] > 0) {
+					src.connect(delay_size);
+				}
+
 				// Biquad Filter
-				src.connect(biquadFilter);
+				if (track.effect_state[1] > 0) {
+					src.connect(biquadFilter);
+				}
 
 				// Reverb
-				src.connect(reverb);
+				if (track.effect_state[2] > 0) {
+					src.connect(reverb);
+				}
 			}
         }
 	}
 
-    // todo add a single playSample function
-    playSample(sampleName) {
+	playSample(sampleName) {
         let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
@@ -164,16 +183,41 @@ class Player {
     play() {
         let t = this.context.currentTime + OFFSET;
 		this.create_audio_nodes();
+
         for (let k in this.tracks) {
             let track = this.tracks[k];
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
-                    track.sources[tick].start(t + tick*INTERVAL);
+                    track.sources[tick].start(t + tick * INTERVAL);
+                    this.visualizeAudio(tick * INTERVAL + OFFSET, track);
                 }
             }
         }
+
+        this.highlightTicks();
     }
+
+    visualizeAudio(offset, track) {
+        setTimeout(function (){
+			$("#visualisation-screen").css("backgroundColor", track.sample.color);
+
+		}, offset * 1000);
+	}
+
+    highlightTicks() {
+		console.log("Penis");
+		for (let i = 0; i < Track.numberOfTicks; i++) {
+			setTimeout(function () {
+                $(".sample").css("border", "");
+				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
+            }, (i * INTERVAL + OFFSET) * 1000);
+        }
+        setTimeout(function () {
+            $(".sample").css("border", "");
+        }, (Track.numberOfTicks * INTERVAL + OFFSET) * 1000);
+    }
+
 
     static hideAllVids() {
         $("[id^='vid-']").hide();

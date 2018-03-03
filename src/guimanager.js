@@ -5,10 +5,10 @@ class GuiManager {
 		this.samples = samples;
 	}
 
-	static addSampleGui() {
-		for (let i in samples) {
-		    if (samples.hasOwnProperty(i)) {
-                let sample = samples[i];
+	addSamplePanel() {
+		for (let i in this.samples) {
+		    if (this.samples.hasOwnProperty(i)) {
+                let sample = this.samples[i];
                 let div = document.createElement("div");
                 div = $(div).addClass("addableSample");
                 let input = document.createElement("input");
@@ -25,31 +25,36 @@ class GuiManager {
         }
 	}
 
-	addTrackGui(addButton) {
-		const that_player = this.player;
-		for (let i = 0; i < 16; i++) {
-			let sample= $("<div class=\"sample\" id=\"cell-" + this.yPos + "-" + i + "\"></div>");
-			sample.data("yPos", this.yPos);
-			sample.data("xPos", i);
-			sample.data("enabled", false);
-			$("#loop-panel").append(sample);
-			$("#cell-" + this.yPos + "-" + i).click(function() {
-				$(this).data("enabled", ! $(this).data("enabled"));
-				if ($(this).data("enabled")) {
-					$(this).css({ background: "red"})
-				} else {
-					$(this).css({ background: "white"})
-				}
-				that_player.enableTick($(this).data("yPos"), $(this).data("xPos"));
-			});
-		}
+	addTrackPanelColumn(addButton) {
+		const player = this.player;
+		for (let i = 0; i < Track.numberOfTicks; i++) {
+			let tick = $(`<div class="sample" id="cell-${this.yPos}-${i}"></div>`);
+			tick.data("yPos", this.yPos);
+			tick.data("xPos", i);
+			tick.data("enabled", false);
+			$("#loop-panel").append(tick);
+			$("#cell-" + this.yPos + "-" + i).click(onCellClick);
+
+			// find sample with player.activeSample as name
+			let sample = samples.find(s => s.title === player.activeSample);
+
+            function onCellClick() {
+                $(this).data("enabled", !$(this).data("enabled"));
+                if ($(this).data("enabled")) {
+                    $(this).css({background: sample.color})
+                } else {
+                    $(this).css({background: "#f1f1f1"})
+                }
+                player.enableTick($(this).data("yPos"), $(this).data("xPos"));
+            }
+        }
 		let removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>");
 		removeButton.data("yPos", this.yPos);
 		removeButton.click(function() {
 
 			const y = $(this).data("yPos");
 
-			that_player.removeTrack(y);
+			player.removeTrack(y);
 
 			// remove samples
 			$("[id^='cell-" + y + "-']").remove();
@@ -61,17 +66,40 @@ class GuiManager {
 			$(this).parent().remove();
 		});
 
-        let trackPanel = $("<div class=\"track-info\"></div>");
+        let trackInfo = $("<div class=\"track-info\"></div>");
         let max = 0;
         $(".track-info").each(function() {
             max = Math.max(this.id, max);
         });
-		trackPanel.attr("id", "track-info-"+this.yPos);
-        trackPanel.append(removeButton);
-        $("#track-panel").append(trackPanel);
+		trackInfo.attr("id", "track-info-"+this.yPos);
+        trackInfo.append(removeButton);
+        $("#track-panel").append(trackInfo);
+
 		for (let i = 0; i < 3; i++) {
             let effect = $("<div class=\"effect\"></div>");
             effect.data("yPos", this.yPos);
+            effect.data("x", i);
+			effect.data("value", 0);
+			effect.click(function() {
+				const y = $(this).data("yPos");
+				const x = $(this).data("x");
+				effect_clicked(y, x);
+
+				let value = $(this).data("value");
+
+				// manage enabling
+				value = (value + 1) % 4;
+				$(this).data("value", value)
+				if (value == 0) {
+					$(this).css({ background: "#f1f1f1"});
+				} else if (value == 1) {
+					$(this).css({ background: "#66ccff"});
+				} else if (value == 2) {
+					$(this).css({ background: "#3399ff"});
+				} else if (value == 3) {
+					$(this).css({ background: "#0066ff"});
+				}
+			});
 			$("#effect-panel").append(effect)
 		}
 		this.yPos++;

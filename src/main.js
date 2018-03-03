@@ -21,17 +21,18 @@ function init() {
         samples = JSON.parse(response).samples;
         player = new Player(context, samples);
         DashUtils.addVideos(samples);
-        guiManager = new GuiManager(player);
-        GuiManager.addSampleGui();
+        guiManager = new GuiManager(player, samples);
+        guiManager.addSamplePanel();
 
         $("#add-button").click(function() {
-            guiManager.addTrackGui($(this));
-            player.addTrack()
+            guiManager.addTrackPanelColumn($(this));
+            player.addTrack();
         });
 
-        for (let j = 0; j < 14; j++) {
-            let rand = GuiManager.getRandomLightColor();
-            $("#sample-container").find(".addableSample #"+j).css("background-color", rand);
+        for (let i = 0; i < samples.length; i++) {
+            let color = GuiManager.getRandomLightColor();
+            $("#sample-container").find(".addableSample #"+i).css("background-color", color);
+            samples[i].color = color;
         }
 
         $(".addableSampleButton").focusout(function() {
@@ -42,4 +43,8 @@ function init() {
             }
         });
     });
+}
+
+function effect_clicked(y, x) {
+	player.effect_clicked(y, x);
 }
