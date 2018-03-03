@@ -11,7 +11,7 @@ class Track {
     	}
 
 	effect_clicked(x) {
-		this.effect_state[x] = 1 - this.effect_state[x];
+		this.effect_state[x] = (this.effect_state[x] + 1) % 4;
 	}
 }
 

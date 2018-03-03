@@ -85,15 +85,15 @@ class Player {
 			// Delay -------------------------------------------------
 			// create
 			let delay_size = 0;
-			if (track.effect_state[0] == 1) {
+			if (track.effect_state[0] > 0) {
 				delay_size = this.context.createGain();
 				let delay = this.context.createDelay();
 				let delay_value = this.context.createGain();
 
 				// settings
-				delay_size.gain.value = 0.4; // size
+				delay_size.gain.value = track.effect_state[0] * 0.25; // size
 				delay.delayTime.value = 0.3; // time
-				delay_value.gain.value = 0.5; // mix
+				delay_value.gain.value = 0.2 + track.effect_state[0] * 0.1; // mix
 
 				// connect
 				delay_size.connect(delay);
@@ -105,15 +105,15 @@ class Player {
 			// Biquad Filter -----------------------------------------
 			// create
 			let biquadFilter = 0;
-			if (track.effect_state[1] == 1) {
+			if (track.effect_state[1] > 0) {
 				let gainNode = this.context.createGain();
 				biquadFilter = this.context.createBiquadFilter();
 
 				// settings
 				biquadFilter.type = "lowpass"; // type
-				biquadFilter.frequency.value = 5000; // frequency
+				biquadFilter.frequency.value = 1000 + track.effect_state[1] * 1000; // frequency
 				biquadFilter.gain.value = 1; // gain value
-				gainNode.gain.value = 0.3; // mix
+				gainNode.gain.value = 0.8; // mix
 
 				// connect
 				biquadFilter.connect(gainNode);
@@ -123,13 +123,13 @@ class Player {
 			// Reverb --------------------------------------------
 			// create
 			let reverb = 0;
-			if (track.effect_state[2] == 1) {
+			if (track.effect_state[2] > 0) {
 				reverb = this.context.createConvolver();
 				reverb.buffer = this.irHall;
 				let reverb_gain = this.context.createGain();
 
 				// settings
-				reverb_gain.gain.value = 0.5; // mix
+				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
 
 				reverb.connect(reverb_gain);
 				reverb_gain.connect(this.context.destination);
@@ -143,17 +143,17 @@ class Player {
 				src.connect(this.context.destination);
 
 				// Delay
-				if (track.effect_state[0] == 1) {
+				if (track.effect_state[0] > 0) {
 					src.connect(delay_size);
 				}
 
 				// Biquad Filter
-				if (track.effect_state[1] == 1) {
+				if (track.effect_state[1] > 0) {
 					src.connect(biquadFilter);
 				}
 
 				// Reverb
-				if (track.effect_state[2] == 1) {
+				if (track.effect_state[2] > 0) {
 					src.connect(reverb);
 				}
 			}
