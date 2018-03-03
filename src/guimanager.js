@@ -48,7 +48,7 @@ class GuiManager {
                 player.enableTick($(this).data("yPos"), $(this).data("xPos"));
             }
         }
-		let removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>");
+		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">x</p></div>");
 		removeButton.data("yPos", this.yPos);
 		removeButton.click(onRemoveClick);
 
@@ -73,6 +73,44 @@ class GuiManager {
         let trackInfo = $("<div class=\"track-info\"></div>");
         trackInfo.append(removeButton);
 		$("#track-panel").append(trackInfo);
+
+		// mute button
+		let muteButton = $("<div id=\"mute-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">m</p></div>");
+		muteButton.data("yPos", this.yPos);
+		muteButton.data("muted", false);
+		muteButton.click(function() {
+			let t = $(this);
+			player.muteTrack(t.data("yPos"));
+			let muted = !t.data("muted");
+			if (muted) {
+				t.css({ background: "#bbbbbb" });
+			} else {
+				t.css({ background: "#999999" });
+			}
+			t.data("muted", muted);
+		});
+
+        trackInfo.append(muteButton);
+
+		// solo button
+		let soloButton = $("<div id=\"solo-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">s</p></div>");
+		soloButton.data("yPos", this.yPos);
+		soloButton.data("solod", false);
+		soloButton.click(function() {
+			let t = $(this);
+			player.soloTrack(t.data("yPos"));
+			let solod = !t.data("solod");
+			if (solod) {
+				t.css({ background: "#bbbbbb" });
+			} else {
+				t.css({ background: "#999999" });
+			}
+			t.data("solod", solod);
+		});
+
+        trackInfo.append(soloButton);
+
+		// effects
 		for (let i = 0; i < 3; i++) {
             let effect = $("<div class=\"effect\"></div>");
             effect.data("yPos", this.yPos);

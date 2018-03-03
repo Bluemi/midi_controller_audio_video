@@ -92,6 +92,17 @@ class Player {
 				track.sources.push(source);
 			}
 
+			// Volume ------------------------------------------------
+			// create
+			let volume = this.context.createGain();
+			track.volumeNode = volume;
+
+			// settings
+			volume.gain.value = track.volume;
+
+			// connect
+			volume.connect(this.analyser);
+
 			// Delay -------------------------------------------------
 			// create
 			let delay_size = 0;
@@ -109,7 +120,7 @@ class Player {
 				delay_size.connect(delay);
 				delay.connect(delay_size);
 				delay.connect(delay_value);
-				delay_value.connect(this.analyser);
+				delay_value.connect(volume);
 			}
 
 			// Biquad Filter -----------------------------------------
@@ -127,7 +138,7 @@ class Player {
 
 				// connect
 				biquadFilter.connect(gainNode);
-				gainNode.connect(this.analyser);
+				gainNode.connect(volume);
 			}
 
 			// Reverb --------------------------------------------
@@ -142,7 +153,7 @@ class Player {
 				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
 
 				reverb.connect(reverb_gain);
-				reverb_gain.connect(this.analyser);
+				reverb_gain.connect(volume);
 			}
 
 			// connect sources
@@ -150,7 +161,7 @@ class Player {
 				let src = track.sources[s];
 
 				// Dry
-				src.connect(this.analyser);
+				src.connect(volume);
 
 				// Delay
 				if (track.effect_state[0] > 0) {
@@ -203,8 +214,23 @@ class Player {
         let t = this.context.currentTime + OFFSET;
         this.create_audio_nodes();
 
+		// look for solo tracks
+		let has_solo_tracks = false;
+		for (let k in this.tracks) {
+			if (this.tracks[k].solod) {
+				has_solo_tracks = true;
+				break;
+			}
+		}
+
         for (let k in this.tracks) {
             let track = this.tracks[k];
+			if (track.muted) {
+				continue;
+			}
+			if (has_solo_tracks && !track.solod) {
+				continue;
+			}
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
@@ -287,5 +313,13 @@ class Player {
 
 	stop() {
 		clearInterval(this.loopInterval);
+	}
+
+	muteTrack(y) {
+		this.tracks[y].mute();
+	}
+
+	soloTrack(y) {
+		this.tracks[y].solo();
 	}
 }

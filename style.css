@@ -10,7 +10,7 @@ body {
 
 #track-panel {
 	background-color: #999;
-	width: 126px;
+	width: 116px;
 	align-content: left;
 }
 
@@ -23,7 +23,7 @@ body {
 	display: flex;
 	justify-content: center;
 	margin: 0;
-	width: 978px
+	width: 968px
 }
 
 .flex-panel {
@@ -75,10 +75,22 @@ body {
 	width: 120px;
 	height: 40px;
 	margin: 2px;
-	/*vertical-align: middle;*/
 }
 
-.remove-button {
+.track-info-button-content {
+	display: table-cell;
+	height: 30px;
+	width: 30px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.track-info-button {
+	background-color: #999999;
+	vertical-align: middle;
+	height: 30px;
+	text-align: center;
+	float: left;
 	width: 30px;
 	height: 30px;
 	position: relative;
