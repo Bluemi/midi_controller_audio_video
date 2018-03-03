@@ -194,9 +194,21 @@ class Player {
         let t = this.context.currentTime + OFFSET;
 		this.create_audio_nodes();
 
+		// look for solo tracks
+		let has_solo_tracks = false;
+		for (let k in this.tracks) {
+			if (this.tracks[k].solod) {
+				has_solo_tracks = true;
+				break;
+			}
+		}
+
         for (let k in this.tracks) {
             let track = this.tracks[k];
 			if (track.muted) {
+				continue;
+			}
+			if (has_solo_tracks && !track.solod) {
 				continue;
 			}
             for (let tick = 0; tick < track.ticks.length; tick++) {
@@ -254,5 +266,9 @@ class Player {
 
 	muteTrack(y) {
 		this.tracks[y].mute();
+	}
+
+	soloTrack(y) {
+		this.tracks[y].solo();
 	}
 }

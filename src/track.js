@@ -10,6 +10,7 @@ class Track {
 			this.sources = [];
 			this.effect_state = [0, 0, 0];
 			this.muted = false;
+			this.solod = false;
 			this.volume = 1;
     	}
 
@@ -19,6 +20,10 @@ class Track {
 
 	mute() {
 		this.muted = !this.muted;
+	}
+
+	solo() {
+		this.solod = !this.solod;
 	}
 }
 
