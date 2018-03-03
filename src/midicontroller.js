@@ -21,8 +21,6 @@ function initMidi() {
 function midiSuccess(midi) {
     console.log('Midi is working!');
 
-    $(".track-info")
-
     midiAccess = midi;
     let inputs = midi.inputs;
     for (let input of inputs.values()) {
@@ -48,7 +46,7 @@ function onMidiMessage(event) {
             if(value===0) clickNewButton(1);
             break;
         case 48:
-            regulateVolume();
+            regulateVolume(value);
             break;
         case 51:
             changeFocusedTrackInfo(value);
@@ -73,8 +71,10 @@ function clickNewButton(direction) {
     }
 }
 
-function regulateVolume() {
-
+function regulateVolume(value) {
+    if ($oldTrackInfoFocus != null){
+        console.log(player.tracks[$oldTrackInfoFocus.index()]);
+    }
 }
 
 
