@@ -67,6 +67,21 @@ class GuiManager {
 		for (let i = 0; i < 3; i++) {
             let effect = $("<div class=\"effect\"></div>");
             effect.data("yPos", this.yPos);
+            effect.data("x", i);
+			effect.data("enabled", false);
+			effect.click(function() {
+				const y = $(this).data("yPos");
+				const x = $(this).data("x");
+				effect_clicked(y, x);
+
+				// manage enabling
+				$(this).data("enabled", ! $(this).data("enabled"))
+				if ($(this).data("enabled")) {
+					$(this).css({ background: "red"})
+				} else {
+					$(this).css({ background: "white"})
+				}
+			});
 			$("#effect-panel").append(effect)
 		}
 		this.yPos++;

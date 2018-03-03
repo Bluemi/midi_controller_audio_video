@@ -53,6 +53,10 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
+	effect_clicked(y, x) {
+		this.tracks[y].effect_clicked(x);
+	}
+
     addTrack() {
         this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample]);
 		this.activeSample = "";
@@ -80,63 +84,78 @@ class Player {
 
 			// Delay -------------------------------------------------
 			// create
-			let delay_size = this.context.createGain();
-			let delay = this.context.createDelay();
-			let delay_value = this.context.createGain();
+			let delay_size = 0;
+			if (track.effect_state[0] == 1) {
+				delay_size = this.context.createGain();
+				let delay = this.context.createDelay();
+				let delay_value = this.context.createGain();
 
-			// settings
-			delay_size.gain.value = 0.4; // size
-			delay.delayTime.value = 0.3; // time
-			delay_value.gain.value = 0.5; // mix
+				// settings
+				delay_size.gain.value = 0.4; // size
+				delay.delayTime.value = 0.3; // time
+				delay_value.gain.value = 0.5; // mix
 
-			// connect
-			delay_size.connect(delay);
-			delay.connect(delay_size);
-			delay.connect(delay_value);
-			delay_value.connect(this.context.destination);
+				// connect
+				delay_size.connect(delay);
+				delay.connect(delay_size);
+				delay.connect(delay_value);
+				delay_value.connect(this.context.destination);
+			}
 
 			// Biquad Filter -----------------------------------------
 			// create
-			let gainNode = this.context.createGain();
-			let biquadFilter = this.context.createBiquadFilter();
+			let biquadFilter = 0;
+			if (track.effect_state[1] == 1) {
+				let gainNode = this.context.createGain();
+				biquadFilter = this.context.createBiquadFilter();
 
-			// settings
-			biquadFilter.type = "lowpass"; // type
-			biquadFilter.frequency.value = 5000; // frequency
-			biquadFilter.gain.value = 1; // gain value
-			gainNode.gain.value = 0.3; // mix
+				// settings
+				biquadFilter.type = "lowpass"; // type
+				biquadFilter.frequency.value = 5000; // frequency
+				biquadFilter.gain.value = 1; // gain value
+				gainNode.gain.value = 0.3; // mix
 
-			// connect
-			biquadFilter.connect(gainNode);
-			gainNode.connect(this.context.destination);
+				// connect
+				biquadFilter.connect(gainNode);
+				gainNode.connect(this.context.destination);
+			}
 
 			// Reverb --------------------------------------------
 			// create
-			let reverb = this.context.createConvolver();
-			reverb.buffer = this.irHall;
-			let reverb_gain = this.context.createGain();
+			let reverb = 0;
+			if (track.effect_state[2] == 1) {
+				reverb = this.context.createConvolver();
+				reverb.buffer = this.irHall;
+				let reverb_gain = this.context.createGain();
 
-			// settings
-			reverb_gain.gain.value = 0.5; // mix
+				// settings
+				reverb_gain.gain.value = 0.5; // mix
 
-			reverb.connect(reverb_gain);
-			reverb_gain.connect(this.context.destination);
+				reverb.connect(reverb_gain);
+				reverb_gain.connect(this.context.destination);
+			}
 
 			// connect sources
 			for (let s in track.sources) {
 				let src = track.sources[s];
 
-				// Delay
-				src.connect(delay_size);
-
 				// Dry
 				src.connect(this.context.destination);
 
+				// Delay
+				if (track.effect_state[0] == 1) {
+					src.connect(delay_size);
+				}
+
 				// Biquad Filter
-				src.connect(biquadFilter);
+				if (track.effect_state[1] == 1) {
+					src.connect(biquadFilter);
+				}
 
 				// Reverb
-				src.connect(reverb);
+				if (track.effect_state[2] == 1) {
+					src.connect(reverb);
+				}
 			}
         }
 	}
