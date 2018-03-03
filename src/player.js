@@ -13,6 +13,8 @@ class Player {
         this.irHall = 0;
         this.yPos = 0;
         this.isVideoPlaying = false;
+		this.static_reverb = context.createConvolver();
+		this.connected_reverb_gain = false;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -31,8 +33,7 @@ class Player {
         // Decode asynchronously
         request.onload = function() {
             _player.context.decodeAudioData(request.response, function(buffer) {
-                _player.irHall = buffer;
-
+				_player.static_reverb.buffer = buffer;
             }, function(e) {alert("error: " + e)});
         };
         request.send();
@@ -62,8 +63,8 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
-	effect_clicked(y, x) {
-		this.tracks[y].effect_clicked(x);
+	effect_clicked(y, x, value) {
+		this.tracks[y].effect_clicked(x, value);
 	}
 
     addTrack() {
@@ -95,6 +96,8 @@ class Player {
 			// Volume ------------------------------------------------
 			// create
 			let volume = this.context.createGain();
+
+			// set track nodes
 			track.volumeNode = volume;
 
 			// settings
@@ -106,55 +109,57 @@ class Player {
 			// Delay -------------------------------------------------
 			// create
 			let delay_size = 0;
-			if (track.effect_state[0] > 0) {
-				delay_size = this.context.createGain();
-				let delay = this.context.createDelay();
-				let delay_value = this.context.createGain();
+			delay_size = this.context.createGain();
+			let delay = this.context.createDelay();
+			let delay_value = this.context.createGain();
 
-				// settings
-				delay_size.gain.value = track.effect_state[0] * 0.25; // size
-				delay.delayTime.value = 0.3; // time
-				delay_value.gain.value = 0.2 + track.effect_state[0] * 0.1; // mix
+			// set track nodes
+			track.delaySizeNode = delay_size;
+			track.delayValueNode = delay_value;
 
-				// connect
-				delay_size.connect(delay);
-				delay.connect(delay_size);
-				delay.connect(delay_value);
-				delay_value.connect(volume);
-			}
+			// settings
+			delay_size.gain.value = track.delaySize; // size
+			delay.delayTime.value = 0.3; // time
+			delay_value.gain.value = track.delayValue; // mix
+
+			// connect
+			delay_size.connect(delay);
+			delay.connect(delay_size);
+			delay.connect(delay_value);
+			delay_value.connect(volume);
 
 			// Biquad Filter -----------------------------------------
 			// create
 			let biquadFilter = 0;
-			if (track.effect_state[1] > 0) {
-				let gainNode = this.context.createGain();
-				biquadFilter = this.context.createBiquadFilter();
+			let gainNode = this.context.createGain();
+			biquadFilter = this.context.createBiquadFilter();
 
-				// settings
-				biquadFilter.type = "lowpass"; // type
-				biquadFilter.frequency.value = 1000 + track.effect_state[1] * 1000; // frequency
-				biquadFilter.gain.value = 1; // gain value
-				gainNode.gain.value = 0.8; // mix
+			// set track nodes
+			track.biquadFilterNode = biquadFilter;
 
-				// connect
-				biquadFilter.connect(gainNode);
-				gainNode.connect(volume);
-			}
+			// settings
+			biquadFilter.type = "lowpass"; // type
+			biquadFilter.frequency.value = track.biquadFilterFrequency; // frequency
+			biquadFilter.gain.value = 1; // gain value
+			gainNode.gain.value = 0.8; // mix
+
+			// connect
+			biquadFilter.connect(gainNode);
+			gainNode.connect(volume);
 
 			// Reverb --------------------------------------------
 			// create
-			let reverb = 0;
-			if (track.effect_state[2] > 0) {
-				reverb = this.context.createConvolver();
-				reverb.buffer = this.irHall;
-				let reverb_gain = this.context.createGain();
+			let reverb_gain = this.context.createGain();
 
-				// settings
-				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
+			// settings
+			reverb_gain.gain.value = track.reverbGain; // mix
 
-				reverb.connect(reverb_gain);
-				reverb_gain.connect(volume);
-			}
+			// set track nodes
+			track.reverbGainNode = reverb_gain;
+
+			// connect
+			reverb_gain.connect(this.static_reverb);
+			this.static_reverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
@@ -164,19 +169,13 @@ class Player {
 				src.connect(volume);
 
 				// Delay
-				if (track.effect_state[0] > 0) {
-					src.connect(delay_size);
-				}
+				src.connect(delay_size);
 
 				// Biquad Filter
-				if (track.effect_state[1] > 0) {
-					src.connect(biquadFilter);
-				}
+				src.connect(biquadFilter);
 
 				// Reverb
-				if (track.effect_state[2] > 0) {
-					src.connect(reverb);
-				}
+				src.connect(reverb_gain);
 			}
         }
 	}

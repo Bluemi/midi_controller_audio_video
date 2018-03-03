@@ -119,14 +119,15 @@ class GuiManager {
 			effect.click(function() {
 				const y = $(this).data("yPos");
 				const x = $(this).data("x");
-				effect_clicked(y, x);
 
 				let value = $(this).data("value");
 
 				// manage enabling
 				value = (value + 1) % 4;
+				effect_clicked(y, x, value / 3);
+
 				$(this).data("value", value);
-				if (value === 0) {
+				if (value == 0) {
 					$(this).css({ background: "#f1f1f1"});
 				} else if (value === 1) {
 					$(this).css({ background: "#66ccff"});
