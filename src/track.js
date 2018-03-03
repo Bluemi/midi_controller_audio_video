@@ -12,6 +12,8 @@ class Track {
 			this.muted = false;
 			this.solod = false;
 			this.volume = 1;
+
+			this.volumeNode = undefined;
     	}
 
 	effect_clicked(x) {
@@ -24,6 +26,13 @@ class Track {
 
 	solo() {
 		this.solod = !this.solod;
+	}
+
+	setVolume(value) {
+		this.volume = value;
+		if (! ((typeof this.volumeNode) === "undefined")) {
+			this.volumeNode.gain.value = value;
+		}
 	}
 }
 

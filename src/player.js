@@ -86,6 +86,7 @@ class Player {
 			// Volume ------------------------------------------------
 			// create
 			let volume = this.context.createGain();
+			track.volumeNode = volume;
 
 			// settings
 			volume.gain.value = track.volume;
@@ -231,7 +232,6 @@ class Player {
 	}
 
     highlightTicks() {
-		console.log("Penis");
 		for (let i = 0; i < Track.numberOfTicks; i++) {
 			setTimeout(function () {
                 $(".sample").css("border", "");
