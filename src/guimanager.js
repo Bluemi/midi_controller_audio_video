@@ -94,22 +94,12 @@ class GuiManager {
         trackInfo.append(muteButton);
 
 		// solo button
-		let soloButton = $("<div id=\"solo-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">s</p></div>");
-		soloButton.data("yPos", this.yPos);
-		soloButton.data("solod", false);
-		soloButton.click(function() {
-			let t = $(this);
-			player.soloTrack(t.data("yPos"));
-			let solod = !t.data("solod");
-			if (solod) {
-				t.css({ background: "#bbbbbb" });
-			} else {
-				t.css({ background: "#999999" });
-			}
-			t.data("solod", solod);
-		});
+		let volumeDisplay = $("<div class=\"track-info-button\"><p class=\"track-info-button-content\">100</p></div>");
+		volumeDisplay.data("yPos", this.yPos);
+        volumeDisplay.attr("id", "volume-display"+this.yPos);
+        volumeDisplay.data("solod", false);
 
-        trackInfo.append(soloButton);
+        trackInfo.append(volumeDisplay);
 
 		// effects
 		for (let i = 0; i < 3; i++) {

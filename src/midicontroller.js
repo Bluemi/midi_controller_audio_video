@@ -55,11 +55,11 @@ function onMidiMessage(event) {
         default:
             break;
     }
-
+/*
         console.log("\n" +
         "New Event (on Channel: "+channel+")==> Type: "+ cmd +
         ", Origin: "+btnID +
-        ", Value: "+value);
+        ", Value: "+value);*/
 }
 
 function clickNewButton(direction) {
@@ -75,7 +75,10 @@ function clickNewButton(direction) {
 function regulateVolume(value) {
     let max = 127;
     if ($currentTrackInfoFocus != null && $currentTrackInfoFocus.length !== 0){
-        player.tracks[$currentTrackInfoFocus.index()].volume = value / max;
+        let currentTrackIndex = $currentTrackInfoFocus.index();
+        let volume = value / max;
+        player.tracks[currentTrackIndex].setVolume(volume);
+        $("#volume-display"+currentTrackIndex).find(".track-info-button-content").text(Math.floor(volume*100));
     }
 }
 
