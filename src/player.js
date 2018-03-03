@@ -4,9 +4,9 @@ const OFFSET = 0.1;
 class Player {
 	constructor(context, samples) {
         this.context = context;
+        this.samples = samples;
         this.bufferManager = {};
         this.tracks = {};
-        this.samples = samples;
         this.activeSample = "";
         this.loopInterval = 0;
         this.irHall = 0;
@@ -55,6 +55,7 @@ class Player {
 
     addTrack() {
         this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample]);
+        this.tracks[this.yPos].sample = samples.find(s => s.title === this.activeSample);
 		this.activeSample = "";
         this.yPos++;
     }
@@ -141,8 +142,7 @@ class Player {
         }
 	}
 
-    // todo add a single playSample function
-    playSample(sampleName) {
+	playSample(sampleName) {
         let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
@@ -164,16 +164,41 @@ class Player {
     play() {
         let t = this.context.currentTime + OFFSET;
 		this.create_audio_nodes();
+
         for (let k in this.tracks) {
             let track = this.tracks[k];
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
-                    track.sources[tick].start(t + tick*INTERVAL);
+                    track.sources[tick].start(t + tick * INTERVAL);
+                    this.visualizeAudio(tick * INTERVAL + OFFSET, track);
                 }
             }
         }
+
+        this.highlightTicks()
     }
+
+    visualizeAudio(offset, track) {
+        setTimeout(function (){
+			$("#visualisation-screen").css("backgroundColor", track.sample.color);
+
+		}, offset * 1000);
+	}
+
+    highlightTicks() {
+		console.log("Penis");
+		for (let i = 0; i < Track.numberOfTicks; i++) {
+			setTimeout(function () {
+                $(".sample").css("border", "");
+				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
+            }, (i * INTERVAL + OFFSET) * 1000);
+        }
+        setTimeout(function () {
+            $(".sample").css("border", "");
+        }, (Track.numberOfTicks * INTERVAL + OFFSET) * 1000);
+    }
+
 
     static hideAllVids() {
         $("[id^='vid-']").hide();
