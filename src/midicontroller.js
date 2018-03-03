@@ -1,5 +1,6 @@
 let midiAccess;
 let $oldTrackInfoFocus;
+let trackCount;
 
 document.addEventListener('DOMContentLoaded', (event) => {
     console.log(document.getElementById('result'));
@@ -72,15 +73,17 @@ function clickNewButton(direction) {
 }
 
 function regulateVolume(value) {
+    let max = 127;
     if ($oldTrackInfoFocus != null){
-        console.log(player.tracks[$oldTrackInfoFocus.index()]);
+        player.tracks[$oldTrackInfoFocus.index()].volume = value / max;
     }
+    console.log(player.tracks[$oldTrackInfoFocus.index()].volume);
 }
 
 
 function changeFocusedTrackInfo(value) {
     let max = 128;
-    let trackCount = $(".track-info").length;
+    trackCount = $(".track-info").length;
     let interval = max / trackCount;
     let nth = Number(trackCount - 1) - Math.floor(Number(value) / interval);
     let $trackInfoToFocus = $("#track-panel").children().eq(nth);
