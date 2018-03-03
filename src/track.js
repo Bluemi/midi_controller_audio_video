@@ -10,6 +10,7 @@ class Track {
 			this.sources = [];
 			this.effect_state = [0, 0, 0];
 			this.muted = false;
+			this.volume = 1;
     	}
 
 	effect_clicked(x) {

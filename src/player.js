@@ -83,6 +83,16 @@ class Player {
 				track.sources.push(source);
 			}
 
+			// Volume ------------------------------------------------
+			// create
+			let volume = this.context.createGain();
+
+			// settings
+			volume.gain.value = track.volume;
+
+			// connect
+			volume.connect(this.context.destination);
+
 			// Delay -------------------------------------------------
 			// create
 			let delay_size = 0;
@@ -100,7 +110,7 @@ class Player {
 				delay_size.connect(delay);
 				delay.connect(delay_size);
 				delay.connect(delay_value);
-				delay_value.connect(this.context.destination);
+				delay_value.connect(volume);
 			}
 
 			// Biquad Filter -----------------------------------------
@@ -118,7 +128,7 @@ class Player {
 
 				// connect
 				biquadFilter.connect(gainNode);
-				gainNode.connect(this.context.destination);
+				gainNode.connect(volume);
 			}
 
 			// Reverb --------------------------------------------
@@ -133,7 +143,7 @@ class Player {
 				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
 
 				reverb.connect(reverb_gain);
-				reverb_gain.connect(this.context.destination);
+				reverb_gain.connect(volume);
 			}
 
 			// connect sources
@@ -141,7 +151,7 @@ class Player {
 				let src = track.sources[s];
 
 				// Dry
-				src.connect(this.context.destination);
+				src.connect(volume);
 
 				// Delay
 				if (track.effect_state[0] > 0) {
