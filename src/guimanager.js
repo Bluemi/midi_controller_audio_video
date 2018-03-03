@@ -50,21 +50,25 @@ class GuiManager {
         }
 		let removeButton = $("<button id=\"remove-button\" class=\"remove-button\">x</button>");
 		removeButton.data("yPos", this.yPos);
-		removeButton.click(function() {
+		removeButton.click(onRemoveClick);
 
-			const y = $(this).data("yPos");
+        function onRemoveClick() {
 
-			player.removeTrack(y);
+            const y = $(this).data("yPos");
+
+            player.removeTrack(y);
 
 			// remove samples
-			$("[id^='cell-" + y + "-']").remove();
+            $("[id^='cell-" + y + "-']").remove();
 
 			// remove effects
-			$(".effect").filter(function(index, element) { return $(element).data("yPos") === y; }).remove();
+            $(".effect").filter(function (index, element) {
+                return $(element).data("yPos") === y;
+            }).remove();
 
 			// remove track panel
-			$(this).parent().remove();
-		});
+            $(this).parent().remove();
+        }
 
         let trackInfo = $("<div class=\"track-info\"></div>");
         trackInfo.append(removeButton);
@@ -83,14 +87,14 @@ class GuiManager {
 
 				// manage enabling
 				value = (value + 1) % 4;
-				$(this).data("value", value)
-				if (value == 0) {
+				$(this).data("value", value);
+				if (value === 0) {
 					$(this).css({ background: "#f1f1f1"});
-				} else if (value == 1) {
+				} else if (value === 1) {
 					$(this).css({ background: "#66ccff"});
-				} else if (value == 2) {
+				} else if (value === 2) {
 					$(this).css({ background: "#3399ff"});
-				} else if (value == 3) {
+				} else if (value === 3) {
 					$(this).css({ background: "#0066ff"});
 				}
 			});

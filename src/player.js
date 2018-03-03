@@ -2,15 +2,17 @@ const INTERVAL = 0.2;
 const OFFSET = 0.1;
 
 class Player {
-	constructor(context, samples) {
+	constructor(context, samples, analyser) {
         this.context = context;
         this.samples = samples;
+        this.analyser = analyser;
         this.bufferManager = {};
         this.tracks = {};
         this.activeSample = "";
         this.loopInterval = 0;
         this.irHall = 0;
         this.yPos = 0;
+        this.isVideoPlaying = false;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -34,9 +36,16 @@ class Player {
             }, function(e) {alert("error: " + e)});
         };
         request.send();
-	}
+        this.initializeAudioAnalyzer(context, analyser);
+        this.visualizeAudio();
+    }
 
-	loadSampleBuffer(url, name) {
+    initializeAudioAnalyzer(context, analyser) {
+        this.analyser.connect(context.destination);
+        analyser.fftSize = 2048;
+    }
+
+    loadSampleBuffer(url, name) {
 		let request = new XMLHttpRequest();
 		request.open('GET', url, true);
 		request.responseType = 'arraybuffer';
@@ -100,7 +109,7 @@ class Player {
 				delay_size.connect(delay);
 				delay.connect(delay_size);
 				delay.connect(delay_value);
-				delay_value.connect(this.context.destination);
+				delay_value.connect(this.analyser);
 			}
 
 			// Biquad Filter -----------------------------------------
@@ -118,7 +127,7 @@ class Player {
 
 				// connect
 				biquadFilter.connect(gainNode);
-				gainNode.connect(this.context.destination);
+				gainNode.connect(this.analyser);
 			}
 
 			// Reverb --------------------------------------------
@@ -133,7 +142,7 @@ class Player {
 				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
 
 				reverb.connect(reverb_gain);
-				reverb_gain.connect(this.context.destination);
+				reverb_gain.connect(this.analyser);
 			}
 
 			// connect sources
@@ -141,7 +150,7 @@ class Player {
 				let src = track.sources[s];
 
 				// Dry
-				src.connect(this.context.destination);
+				src.connect(this.analyser);
 
 				// Delay
 				if (track.effect_state[0] > 0) {
@@ -162,7 +171,9 @@ class Player {
 	}
 
 	playSample(sampleName) {
-        let source = this.context.createBufferSource();
+        this.isVideoPlaying = true;
+        $("#my-canvas").hide();
+	    let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
         let sample = this.samples.find(function(s) {
@@ -178,11 +189,19 @@ class Player {
         vid = document.getElementById('vid-' + sampleName);
         vid.currentTime = 0;
         vid.play();
+
+        vid.onended = function (e) {
+            $(vid).hide();
+            $("#my-canvas").show();
+            this.isVideoPlaying = false;
+        }
     }
 
     play() {
+	    if (!this.isVideoPlaying)
+	        $("#my-canvas").show();
         let t = this.context.currentTime + OFFSET;
-		this.create_audio_nodes();
+        this.create_audio_nodes();
 
         for (let k in this.tracks) {
             let track = this.tracks[k];
@@ -190,7 +209,6 @@ class Player {
 				// start track
                 if (track.ticks[tick] > 0) {
                     track.sources[tick].start(t + tick * INTERVAL);
-                    this.visualizeAudio(tick * INTERVAL + OFFSET, track);
                 }
             }
         }
@@ -198,19 +216,51 @@ class Player {
         this.highlightTicks();
     }
 
-    visualizeAudio(offset, track) {
-        setTimeout(function (){
-			$("#visualisation-screen").css("backgroundColor", track.sample.color);
+    visualizeAudio() {
+        let canvas = document.getElementById('my-canvas');
+        let context = canvas.getContext('2d');
 
-		}, offset * 1000);
+        let bufferLength = analyser.frequencyBinCount;
+        let dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+            let drawVisual = requestAnimationFrame(draw);
+            analyser.getByteTimeDomainData(dataArray);
+            context.fillStyle = 'rgb(200, 200, 200)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.lineWidth = 2;
+            context.strokeStyle = 'rgb(0, 0, 0)';
+
+            context.beginPath();
+            let sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+            for(let i = 0; i < bufferLength; i++) {
+
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+
+                if(i === 0) {
+                    context.moveTo(x, y);
+                } else {
+                    context.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+            context.lineTo(canvas.width, canvas.height/2);
+            context.stroke();
+        }
+
+        draw();
 	}
 
     highlightTicks() {
-		console.log("Penis");
 		for (let i = 0; i < Track.numberOfTicks; i++) {
 			setTimeout(function () {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
+				if (i-1 === Track.numberOfTicks)
+                    $("#my-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
         }
         setTimeout(function () {
