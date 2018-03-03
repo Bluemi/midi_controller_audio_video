@@ -62,8 +62,13 @@ class GuiManager {
 		});
 
         let trackPanel = $("<div class=\"track-info\"></div>");
+        let max = 0;
+        $(".track-info").each(function() {
+            max = Math.max(this.id, max);
+        });
+		trackPanel.attr("id", "track-info-"+this.yPos);
         trackPanel.append(removeButton);
-		$("#track-panel").append(trackPanel);
+        $("#track-panel").append(trackPanel);
 		for (let i = 0; i < 3; i++) {
             let effect = $("<div class=\"effect\"></div>");
             effect.data("yPos", this.yPos);
