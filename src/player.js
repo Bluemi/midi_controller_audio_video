@@ -185,6 +185,9 @@ class Player {
 		this.create_audio_nodes();
         for (let k in this.tracks) {
             let track = this.tracks[k];
+			if (track.muted) {
+				continue;
+			}
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
@@ -212,5 +215,9 @@ class Player {
 
 	stop() {
 		clearInterval(this.loopInterval);
+	}
+
+	muteTrack(y) {
+		this.tracks[y].mute();
 	}
 }

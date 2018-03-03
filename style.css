@@ -75,10 +75,22 @@ body {
 	width: 120px;
 	height: 40px;
 	margin: 2px;
-	/*vertical-align: middle;*/
 }
 
-.remove-button {
+.track-info-button-content {
+	display: table-cell;
+	height: 30px;
+	width: 30px;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.track-info-button {
+	background-color: #999999;
+	vertical-align: middle;
+	height: 30px;
+	text-align: center;
+	float: left;
 	width: 30px;
 	height: 30px;
 	position: relative;
