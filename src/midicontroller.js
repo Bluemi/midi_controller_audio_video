@@ -1,5 +1,5 @@
 let midiAccess;
-let $oldTrackInfoFocus;
+let $currentTrackInfoFocus;
 let trackCount;
 
 document.addEventListener('DOMContentLoaded', (event) => {
@@ -74,24 +74,22 @@ function clickNewButton(direction) {
 
 function regulateVolume(value) {
     let max = 127;
-    if ($oldTrackInfoFocus != null){
-        player.tracks[$oldTrackInfoFocus.index()].volume = value / max;
+    if ($currentTrackInfoFocus != null && $currentTrackInfoFocus.length !== 0){
+        player.tracks[$currentTrackInfoFocus.index()].volume = value / max;
     }
-    console.log(player.tracks[$oldTrackInfoFocus.index()].volume);
 }
-
 
 function changeFocusedTrackInfo(value) {
     let max = 128;
     trackCount = $(".track-info").length;
     let interval = max / trackCount;
     let nth = Number(trackCount - 1) - Math.floor(Number(value) / interval);
-    let $trackInfoToFocus = $("#track-panel").children().eq(nth);
-    if(!($oldTrackInfoFocus === $trackInfoToFocus)){
-        if (!($oldTrackInfoFocus == null)){
-            $oldTrackInfoFocus.css("background-color", "#aaa");
+    let $newTrackInfoToFocus = $("#track-panel").children().eq(nth);
+    if(!($currentTrackInfoFocus === $newTrackInfoToFocus)){
+        if (!($currentTrackInfoFocus == null)){
+            $currentTrackInfoFocus.css("background-color", "#aaa");
         }
-        $trackInfoToFocus.css("background-color", "red");
-        $oldTrackInfoFocus = $trackInfoToFocus;
+        $newTrackInfoToFocus.css("background-color", "red");
+        $currentTrackInfoFocus = $newTrackInfoToFocus;
     }
 }
