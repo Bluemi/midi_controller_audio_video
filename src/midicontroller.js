@@ -23,7 +23,9 @@ function midiSuccess(midi) {
     console.log('Midi is working!');
 
     midiAccess = midi;
+    console.log(midi);
     let inputs = midi.inputs;
+
     for (let input of inputs.values()) {
         input.onmidimessage = onMidiMessage;
     }
@@ -75,10 +77,11 @@ function clickNewButton(direction) {
 function regulateVolume(value) {
     let max = 127;
     if ($currentTrackInfoFocus != null && $currentTrackInfoFocus.length !== 0){
-        let currentTrackIndex = $currentTrackInfoFocus.index();
+        let currentTrackIndex = $currentTrackInfoFocus.data("yPos");
         let volume = value / max;
         player.tracks[currentTrackIndex].setVolume(volume);
         $("#volume-display"+currentTrackIndex).find(".track-info-button-content").text(Math.floor(volume*100));
+        //$("#volume-display"+currentTrackIndex).append("<input type='image' id='speaker' src='../res/images/speaker/speaker.svg'/>");
     }
 }
 

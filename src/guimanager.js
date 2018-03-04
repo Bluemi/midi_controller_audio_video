@@ -67,6 +67,7 @@ class GuiManager {
 		});
 
         let trackInfo = $("<div class=\"track-info\"></div>");
+        trackInfo.data("yPos", this.yPos);
         let max = 0;
         $(".track-info").each(function() {
             max = Math.max(this.id, max);
