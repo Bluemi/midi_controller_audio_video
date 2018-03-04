@@ -10,11 +10,8 @@ class Player {
         this.tracks = {};
         this.activeSample = "";
         this.loopInterval = 0;
-        this.irHall = 0;
         this.yPos = 0;
-        this.isVideoPlaying = false;
 		this.static_reverb = context.createConvolver();
-		this.connected_reverb_gain = false;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -181,8 +178,7 @@ class Player {
 	}
 
 	playSample(sampleName) {
-        this.isVideoPlaying = true;
-        $("#my-canvas").hide();
+        $("#audio-visualization-canvas").hide();
 	    let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
@@ -200,22 +196,20 @@ class Player {
         vid.currentTime = 0;
         vid.play();
 
-        vid.onended = function (e) {
+        vid.onended = function () {
             $(vid).hide();
-            $("#my-canvas").show();
-            this.isVideoPlaying = false;
+            if (!$(".mpd-video").is(":visible"))
+                $("#audio-visualization-canvas").show();
         }
     }
 
     play() {
-	    if (!this.isVideoPlaying)
-	        $("#my-canvas").show();
-        let t = this.context.currentTime + OFFSET;
         this.create_audio_nodes();
+        let t = this.context.currentTime + OFFSET;
 
 		// look for solo tracks
 		let has_solo_tracks = false;
-		for (let k in this.tracks) {
+        for (let k in this.tracks) {
 			if (this.tracks[k].solod) {
 				has_solo_tracks = true;
 				break;
@@ -242,14 +236,14 @@ class Player {
     }
 
     visualizeAudio() {
-        let canvas = document.getElementById('my-canvas');
+        let canvas = document.getElementById('audio-visualization-canvas');
         let context = canvas.getContext('2d');
 
         let bufferLength = analyser.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
 
         function draw() {
-            let drawVisual = requestAnimationFrame(draw);
+            requestAnimationFrame(draw);
             analyser.getByteTimeDomainData(dataArray);
             context.fillStyle = 'rgb(200, 200, 200)';
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -285,7 +279,7 @@ class Player {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
 				if (i-1 === Track.numberOfTicks)
-                    $("#my-canvas").hide();
+                    $("#audio-visualization-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
         }
         setTimeout(function () {
