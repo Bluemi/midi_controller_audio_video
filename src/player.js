@@ -12,6 +12,7 @@ class Player {
         this.loopInterval = 0;
         this.yPos = 0;
 		this.static_reverb = context.createConvolver();
+		this.lastPlayStartTime = 0;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -76,7 +77,45 @@ class Player {
     }
 
 	enableTick(y, x) {
-		this.tracks[y].ticks[x] = !this.tracks[y].ticks[x];
+		let track = this.tracks[y];
+		track.ticks[x] = !track.ticks[x];
+
+		// add
+		if (track.ticks[x] === true) {
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// create source
+					let source = this.context.createBufferSource();
+					source.buffer = track.buffer;
+
+					// add to track.sources
+					track.sources[x] = source;
+
+					// add to system
+					// Dry
+					source.connect(track.volumeNode);
+					// Delay
+					source.connect(track.delaySizeNode);
+					// Biquad Filter
+					source.connect(track.biquadFilterNode);
+					// Reverb
+					source.connect(track.reverbGainNode);
+
+                    source.start(startTime);
+				}
+			}
+		} else { // remove
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// stop source
+					let source = track.sources[x];
+					track.sources[x] = undefined;
+					source.stop();
+				}
+			}
+		}
 	}
 
 	create_audio_nodes() {
@@ -204,8 +243,9 @@ class Player {
     }
 
     play() {
-        this.create_audio_nodes();
         let t = this.context.currentTime + OFFSET;
+		this.lastPlayStartTime = t;
+        this.create_audio_nodes();
 
 		// look for solo tracks
 		let has_solo_tracks = false;
@@ -296,10 +336,7 @@ class Player {
 		this.play();
 
 		// wait for loop
-		let loopTime = 0;
-		for (let j = 0; j < Track.numberOfTicks; j++) {
-			loopTime += INTERVAL;
-		}
+		let loopTime = INTERVAL * Track.numberOfTicks;
 		let that = this;
 		this.loopInterval = setInterval(function() { that.play() }, loopTime * 1000)
 	}
