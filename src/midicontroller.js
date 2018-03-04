@@ -114,41 +114,57 @@ function changeFocusedTrackInfo(value) {
 }
 
 function regulateBiquadFilterFrequency(value) {
-    if (!isFocusedTrackInfoExistent()) return;
-
-    getTrackByYPos().setBiquadFilterFrequency((value / normalMax) * 1000);
+    masterEffect(1, (value/normalMax)*1000);
     visualizeEffectByColor(1, value/normalMax);
 }
 
 function regulateReverb(value) {
-    if (!isFocusedTrackInfoExistent()) return;
-
-    getTrackByYPos().setReverbValue((value/normalMax)*0.03);
+    masterEffect(2, (value/normalMax)*0.03);
     visualizeEffectByColor(2, value/normalMax);
 }
 
 function regulateDelaySize(value) {
-    if (!isFocusedTrackInfoExistent()) return;
-
-    getTrackByYPos().setDelaySize(value/normalMax);
+    //todo: solve visualization problem with size - not visible
+    masterEffect(3, value/normalMax)
 }
 
 function regulateDelayValue(value) {
-    if (!isFocusedTrackInfoExistent()) return;
-
-    getTrackByYPos().setDelayValue(value/normalMax);
+    masterEffect(0, value/normalMax);
     visualizeEffectByColor(0, value/normalMax);
-}
-
-function getTrackByYPos() {
-    return player.tracks[$currentTrackInfoFocus.data("yPos")];
 }
 
 function isFocusedTrackInfoExistent() {
     return $currentTrackInfoFocus != null && $currentTrackInfoFocus.length > 0;
 }
 
+function masterEffect(effectIndex, value) {
+    if (!isFocusedTrackInfoExistent()) return;
+
+    let currentTrack = player.tracks[$currentTrackInfoFocus.data("yPos")];
+
+    switch (effectIndex){
+        case 0:
+            currentTrack.setDelayValue(value);
+            break;
+        case 1:
+            currentTrack.setBiquadFilterFrequency(value);
+            break;
+        case 2:
+            currentTrack.setReverbValue(value);
+            break;
+        case 3:
+            currentTrack.setDelaySize(value);
+            break;
+        default:
+            break;
+    }
+
+    visualizeEffectByColor(effectIndex, value);
+}
+
 function visualizeEffectByColor(effectIndex, value) {
+    if (!isFocusedTrackInfoExistent()) return;
+
     let index = $currentTrackInfoFocus.data("yPos");
     $('#effect-panel > .effect').each(function () {
         if ($(this).data("yPos") === index && $(this).data("x") === effectIndex) {
