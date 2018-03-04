@@ -2,15 +2,19 @@ const INTERVAL = 0.2;
 const OFFSET = 0.1;
 
 class Player {
-	constructor(context, samples) {
+	constructor(context, samples, analyser) {
         this.context = context;
         this.samples = samples;
+        this.analyser = analyser;
         this.bufferManager = {};
         this.tracks = {};
         this.activeSample = "";
         this.loopInterval = 0;
         this.irHall = 0;
         this.yPos = 0;
+        this.isVideoPlaying = false;
+		this.static_reverb = context.createConvolver();
+		this.connected_reverb_gain = false;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -29,14 +33,20 @@ class Player {
         // Decode asynchronously
         request.onload = function() {
             _player.context.decodeAudioData(request.response, function(buffer) {
-                _player.irHall = buffer;
-
+				_player.static_reverb.buffer = buffer;
             }, function(e) {alert("error: " + e)});
         };
         request.send();
-	}
+        this.initializeAudioAnalyzer(context, analyser);
+        this.visualizeAudio();
+    }
 
-	loadSampleBuffer(url, name) {
+    initializeAudioAnalyzer(context, analyser) {
+        this.analyser.connect(context.destination);
+        analyser.fftSize = 2048;
+    }
+
+    loadSampleBuffer(url, name) {
 		let request = new XMLHttpRequest();
 		request.open('GET', url, true);
 		request.responseType = 'arraybuffer';
@@ -53,8 +63,8 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
-	effect_clicked(y, x) {
-		this.tracks[y].effect_clicked(x);
+	effect_clicked(y, x, value) {
+		this.tracks[y].effect_clicked(x, value);
 	}
 
     addTrack() {
@@ -86,66 +96,70 @@ class Player {
 			// Volume ------------------------------------------------
 			// create
 			let volume = this.context.createGain();
+
+			// set track nodes
 			track.volumeNode = volume;
 
 			// settings
 			volume.gain.value = track.volume;
 
 			// connect
-			volume.connect(this.context.destination);
+			volume.connect(this.analyser);
 
 			// Delay -------------------------------------------------
 			// create
 			let delay_size = 0;
-			if (track.effect_state[0] > 0) {
-				delay_size = this.context.createGain();
-				let delay = this.context.createDelay();
-				let delay_value = this.context.createGain();
+			delay_size = this.context.createGain();
+			let delay = this.context.createDelay();
+			let delay_value = this.context.createGain();
 
-				// settings
-				delay_size.gain.value = track.effect_state[0] * 0.25; // size
-				delay.delayTime.value = 0.3; // time
-				delay_value.gain.value = 0.2 + track.effect_state[0] * 0.1; // mix
+			// set track nodes
+			track.delaySizeNode = delay_size;
+			track.delayValueNode = delay_value;
 
-				// connect
-				delay_size.connect(delay);
-				delay.connect(delay_size);
-				delay.connect(delay_value);
-				delay_value.connect(volume);
-			}
+			// settings
+			delay_size.gain.value = track.delaySize; // size
+			delay.delayTime.value = 0.3; // time
+			delay_value.gain.value = track.delayValue; // mix
+
+			// connect
+			delay_size.connect(delay);
+			delay.connect(delay_size);
+			delay.connect(delay_value);
+			delay_value.connect(volume);
 
 			// Biquad Filter -----------------------------------------
 			// create
 			let biquadFilter = 0;
-			if (track.effect_state[1] > 0) {
-				let gainNode = this.context.createGain();
-				biquadFilter = this.context.createBiquadFilter();
+			let gainNode = this.context.createGain();
+			biquadFilter = this.context.createBiquadFilter();
 
-				// settings
-				biquadFilter.type = "lowpass"; // type
-				biquadFilter.frequency.value = 1000 + track.effect_state[1] * 1000; // frequency
-				biquadFilter.gain.value = 1; // gain value
-				gainNode.gain.value = 0.8; // mix
+			// set track nodes
+			track.biquadFilterNode = biquadFilter;
 
-				// connect
-				biquadFilter.connect(gainNode);
-				gainNode.connect(volume);
-			}
+			// settings
+			biquadFilter.type = "lowpass"; // type
+			biquadFilter.frequency.value = track.biquadFilterFrequency; // frequency
+			biquadFilter.gain.value = 1; // gain value
+			gainNode.gain.value = 0.8; // mix
+
+			// connect
+			biquadFilter.connect(gainNode);
+			gainNode.connect(volume);
 
 			// Reverb --------------------------------------------
 			// create
-			let reverb = 0;
-			if (track.effect_state[2] > 0) {
-				reverb = this.context.createConvolver();
-				reverb.buffer = this.irHall;
-				let reverb_gain = this.context.createGain();
+			let reverb_gain = this.context.createGain();
 
-				// settings
-				reverb_gain.gain.value = 0.25 * track.effect_state[2]; // mix
+			// settings
+			reverb_gain.gain.value = track.reverbGain; // mix
 
-				reverb.connect(reverb_gain);
-				reverb_gain.connect(volume);
-			}
+			// set track nodes
+			track.reverbGainNode = reverb_gain;
+
+			// connect
+			reverb_gain.connect(this.static_reverb);
+			this.static_reverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
@@ -155,25 +169,21 @@ class Player {
 				src.connect(volume);
 
 				// Delay
-				if (track.effect_state[0] > 0) {
-					src.connect(delay_size);
-				}
+				src.connect(delay_size);
 
 				// Biquad Filter
-				if (track.effect_state[1] > 0) {
-					src.connect(biquadFilter);
-				}
+				src.connect(biquadFilter);
 
 				// Reverb
-				if (track.effect_state[2] > 0) {
-					src.connect(reverb);
-				}
+				src.connect(reverb_gain);
 			}
         }
 	}
 
 	playSample(sampleName) {
-        let source = this.context.createBufferSource();
+        this.isVideoPlaying = true;
+        $("#my-canvas").hide();
+	    let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
         let sample = this.samples.find(function(s) {
@@ -189,11 +199,19 @@ class Player {
         vid = document.getElementById('vid-' + sampleName);
         vid.currentTime = 0;
         vid.play();
+
+        vid.onended = function (e) {
+            $(vid).hide();
+            $("#my-canvas").show();
+            this.isVideoPlaying = false;
+        }
     }
 
     play() {
+	    if (!this.isVideoPlaying)
+	        $("#my-canvas").show();
         let t = this.context.currentTime + OFFSET;
-		this.create_audio_nodes();
+        this.create_audio_nodes();
 
 		// look for solo tracks
 		let has_solo_tracks = false;
@@ -216,7 +234,6 @@ class Player {
 				// start track
                 if (track.ticks[tick] > 0) {
                     track.sources[tick].start(t + tick * INTERVAL);
-                    this.visualizeAudio(tick * INTERVAL + OFFSET, track);
                 }
             }
         }
@@ -224,11 +241,42 @@ class Player {
         this.highlightTicks();
     }
 
-    visualizeAudio(offset, track) {
-        setTimeout(function (){
-			$("#visualisation-screen").css("backgroundColor", track.sample.color);
+    visualizeAudio() {
+        let canvas = document.getElementById('my-canvas');
+        let context = canvas.getContext('2d');
 
-		}, offset * 1000);
+        let bufferLength = analyser.frequencyBinCount;
+        let dataArray = new Uint8Array(bufferLength);
+
+        function draw() {
+            let drawVisual = requestAnimationFrame(draw);
+            analyser.getByteTimeDomainData(dataArray);
+            context.fillStyle = 'rgb(200, 200, 200)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            context.lineWidth = 2;
+            context.strokeStyle = 'rgb(0, 0, 0)';
+
+            context.beginPath();
+            let sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+            for(let i = 0; i < bufferLength; i++) {
+
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+
+                if(i === 0) {
+                    context.moveTo(x, y);
+                } else {
+                    context.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+            context.lineTo(canvas.width, canvas.height/2);
+            context.stroke();
+        }
+
+        draw();
 	}
 
     highlightTicks() {
@@ -236,6 +284,8 @@ class Player {
 			setTimeout(function () {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
+				if (i-1 === Track.numberOfTicks)
+                    $("#my-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
         }
         setTimeout(function () {

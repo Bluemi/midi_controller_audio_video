@@ -50,21 +50,25 @@ class GuiManager {
         }
 		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content\">x</p></div>");
 		removeButton.data("yPos", this.yPos);
-		removeButton.click(function() {
+		removeButton.click(onRemoveClick);
 
-			const y = $(this).data("yPos");
+        function onRemoveClick() {
 
-			player.removeTrack(y);
+            const y = $(this).data("yPos");
+
+            player.removeTrack(y);
 
 			// remove samples
-			$("[id^='cell-" + y + "-']").remove();
+            $("[id^='cell-" + y + "-']").remove();
 
 			// remove effects
-			$(".effect").filter(function(index, element) { return $(element).data("yPos") === y; }).remove();
+            $(".effect").filter(function (index, element) {
+                return $(element).data("yPos") === y;
+            }).remove();
 
 			// remove track panel
-			$(this).parent().remove();
-		});
+            $(this).parent().remove();
+        }
 
         let trackInfo = $("<div class=\"track-info\"></div>");
         trackInfo.data("yPos", this.yPos);
@@ -111,20 +115,21 @@ class GuiManager {
 			effect.click(function() {
 				const y = $(this).data("yPos");
 				const x = $(this).data("x");
-				effect_clicked(y, x);
 
 				let value = $(this).data("value");
 
 				// manage enabling
 				value = (value + 1) % 4;
-				$(this).data("value", value)
+				effect_clicked(y, x, value / 3);
+
+				$(this).data("value", value);
 				if (value == 0) {
 					$(this).css({ background: "#f1f1f1"});
-				} else if (value == 1) {
+				} else if (value === 1) {
 					$(this).css({ background: "#66ccff"});
-				} else if (value == 2) {
+				} else if (value === 2) {
 					$(this).css({ background: "#3399ff"});
-				} else if (value == 3) {
+				} else if (value === 3) {
 					$(this).css({ background: "#0066ff"});
 				}
 			});
