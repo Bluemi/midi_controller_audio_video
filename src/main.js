@@ -41,7 +41,6 @@ function init() {
             let addButton = $("#add-button");
             if (! addButton.is(":hover")) {
                 addButton.prop("disabled", true);
-                Player.hideAllVids();
             }
         });
 		document.addEventListener("keydown", function(event) {
