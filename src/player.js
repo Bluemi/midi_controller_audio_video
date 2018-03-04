@@ -13,6 +13,7 @@ class Player {
         this.yPos = 0;
 		this.static_reverb = context.createConvolver();
 		this.lastPlayStartTime = 0;
+		this.highlightTickTimeouts = [];
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -315,15 +316,17 @@ class Player {
 
     highlightTicks() {
 		for (let i = 0; i < Track.numberOfTicks; i++) {
-			setTimeout(function () {
+			let timeout = setTimeout(function () {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
 				if (i-1 === Track.numberOfTicks)
                     $("#audio-visualization-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
+			this.highlightTickTimeouts.push(timeout);
         }
-        setTimeout(function () {
+        let timeout = setTimeout(function () {
             $(".sample").css("border", "");
+			this.highlightTickTimeouts = [];
         }, (Track.numberOfTicks * INTERVAL + OFFSET) * 1000);
     }
 
@@ -343,6 +346,25 @@ class Player {
 
 	stop() {
 		clearInterval(this.loopInterval);
+
+		for (let i in this.highlightTickTimeouts) {
+			let timeout = this.highlightTickTimeouts[i];
+			clearTimeout(timeout);
+		}
+
+		this.highlightTickTimeouts = [];
+		$(".sample").css("border", "");
+
+		// stop audio
+		for (let t in this.tracks) {
+			let track = this.tracks[t];
+			for (let s in track.sources) {
+				if (track.ticks[s] === true) {
+					let source = track.sources[s];
+					source.stop();
+				}
+			}
+		}
 	}
 
 	muteTrack(y) {
