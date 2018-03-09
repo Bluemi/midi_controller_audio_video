@@ -4,11 +4,14 @@
 	<title>DJ/VJ Anwendung</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<script src="node_modules/jquery/dist/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<script src="node_modules/jquery/dist/jquery.min.js"></script>
-	<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	<script src="src/jsonutils.js"></script>
 	<script src="src/dashutils.js"></script>
 	<script src="src/player.js"></script>
@@ -23,25 +26,36 @@
 	<p>Press Add to add a Track.</p>
 </div>
 
-<div id="sample-container">
+<div id="sample-container" class="card-panel">
 </div>
 <!-- Visualisation Screen -->
-<div id="visualisation-screen">
+<div id="visualisation-screen" class="z-depth-1">
 	<canvas id="audio-visualization-canvas" width="320px" height="240px"></canvas>
 </div>
 
 <!-- Audio Main Group -->
 <div id="audio-main-group">
 	<div>
-		<button id="add-button" disabled="true">+</button>
+		<a id="add-button" class="add btn-floating scale-transition scale-out">
+			<i class="material-icons">add</i>
+		</a>
+
 		<div id="body-panel-group">
-			<div id="track-panel" class="flex-panel"></div>
-			<div id="loop-panel" class="flex-panel"> </div>
-			<div id="effect-panel" class="flex-panel"></div>
+			<div id="track-panel" class="flex-panel z-depth-1"></div>
+			<div id="loop-panel" class="flex-panel z-depth-1"> </div>
+			<div id="effect-panel" class="flex-panel z-depth-1"></div>
 		</div>
-		<button id="play-button" onclick="player.play()">play</button>
-		<button id="loop-button" onclick="player.loop()">loop</button>
-		<button id="stop-button" onclick="player.stop()">stop</button>
+
+		<a id="play-button" class="btn btn-floating bottom-button" onclick="player.play()" disabled>
+			<i class="material-icons">play_arrow</i>
+		</a>
+		<a id="loop-button" class="btn btn-floating bottom-button" onclick="player.loop()" disabled>
+			<i class="material-icons">loop</i>
+		</a>
+		<a id="stop-button" class="btn btn-floating bottom-button" onclick="player.stop()" disabled>
+			<i class="material-icons">stop</i>
+		</a>
+
 	</div>
 </div>
 

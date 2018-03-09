@@ -26,6 +26,10 @@ class GuiManager {
 	}
 
 	addTrackPanelColumn(addButton) {
+		$("#play-button").removeAttr("disabled");
+        $("#loop-button").removeAttr("disabled");
+        $("#stop-button").removeAttr("disabled");
+
 		const player = this.player;
 		for (let i = 0; i < Track.numberOfTicks; i++) {
 			let tick = $(`<div class="sample" id="cell-${this.yPos}-${i}"></div>`);
@@ -68,6 +72,12 @@ class GuiManager {
 
 			// remove track panel
             $(this).parent().remove();
+
+            if ($(".track-info").length === 0) {
+                $("#play-button").attr("disabled", "");
+                $("#loop-button").attr("disabled", "");
+                $("#stop-button").attr("disabled", "");
+			}
         }
 
         let trackInfo = $("<div class=\"track-info\"></div>");
@@ -127,7 +137,7 @@ class GuiManager {
 				effect_clicked(y, x, value / 3);
 
 				$(this).data("value", value);
-				if (value == 0) {
+				if (value === 0) {
 					$(this).css({ background: "#f1f1f1"});
 				} else if (value === 1) {
 					$(this).css({ background: "#66ccff"});
@@ -140,7 +150,7 @@ class GuiManager {
 			$("#effect-panel").append(effect)
 		}
 		this.yPos++;
-		addButton.prop("disabled", true);
+        addButton.removeClass("scale-in").addClass("scale-out");
 	}
 
 	static getRandomLightColor() {

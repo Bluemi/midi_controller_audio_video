@@ -179,7 +179,9 @@ class Player {
 
 	playSample(sampleName) {
         $("#audio-visualization-canvas").hide();
-	    let source = this.context.createBufferSource();
+        $("#add-button").addClass("scale-in").removeClass("scale-out");
+
+        let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
         let sample = this.samples.find(function(s) {
@@ -188,7 +190,6 @@ class Player {
         });
         source.start(this.context.currentTime + sample.delay);
         this.activeSample = sampleName;
-        $("#add-button").prop("disabled", false);
         Player.hideAllVids();
         let vid = $("#vid-" + sampleName);
         vid.show();
@@ -293,7 +294,8 @@ class Player {
     }
 
     loop() {
-		this.play();
+		$("#loop-button").addClass("pulse");
+	    this.play();
 
 		// wait for loop
 		let loopTime = 0;
@@ -305,7 +307,8 @@ class Player {
 	}
 
 	stop() {
-		clearInterval(this.loopInterval);
+        $("#loop-button").removeClass("pulse");
+        clearInterval(this.loopInterval);
 	}
 
 	muteTrack(y) {

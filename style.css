@@ -41,11 +41,12 @@ body {
 #add-button {
 	width: 40px;
 	margin-left: 1px;
+	margin-bottom: 5px;
 }
 
 #sample-container {
 	display: flex;
-	width: 308px;
+	width: 380px;
     flex-wrap: wrap;
 	justify-content: center;
 	background-color: #666;
@@ -92,26 +93,14 @@ body {
 	text-align: center;
 	float: left;
 	width: 30px;
-	height: 30px;
 	position: relative;
 	top: 50%;
 	transform: translateY(-50%);
 	margin-left: 5px;
 }
 
-#play-button {
-	margin-top: 10px;
-	margin-left: 1px;
-}
-
-#loop-button {
-	margin-top: 10px;
-	margin-left: 1px;
-}
-
-#stop-button {
-	margin-top: 10px;
-	margin-left: 1px;
+.bottom-button {
+	margin-top: 5px;
 }
 
 #audio-main-group {

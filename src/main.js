@@ -40,13 +40,13 @@ function init() {
         $(".addableSampleButton").focusout(function() {
             let addButton = $("#add-button");
             if (! addButton.is(":hover")) {
-                addButton.prop("disabled", true);
+                addButton.removeClass("scale-in").addClass("scale-out");
             }
         });
 		document.addEventListener("keydown", function(event) {
 			if (event.keyCode === 65) {
 				let aBtn = $("#add-button");
-				if (!aBtn.prop("disabled")) {
+				if (aBtn.hasClass("scale-in")) {
 					guiManager.addTrackPanelColumn(aBtn);
 					player.addTrack();
 				}
