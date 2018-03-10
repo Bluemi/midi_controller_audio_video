@@ -12,7 +12,9 @@ class Player {
         this.activeSample = "";
         this.loopInterval = 0;
         this.yPos = 0;
-		this.staticReverb = context.createConvolver();
+		this.static_reverb = context.createConvolver();
+		this.lastPlayStartTime = 0;
+		this.highlightTickTimeouts = [];
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -31,7 +33,7 @@ class Player {
         // Decode asynchronously
         request.onload = function() {
             _player.context.decodeAudioData(request.response, function(buffer) {
-				_player.staticReverb.buffer = buffer;
+				_player.static_reverb.buffer = buffer;
             }, function(e) {alert("error: " + e)});
         };
         request.send();
@@ -61,8 +63,8 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
-	effectClicked(y, x, value) {
-		this.tracks[y].effectClicked(x, value);
+	effect_clicked(y, x, value) {
+		this.tracks[y].effect_clicked(x, value);
 	}
 
     addTrack() {
@@ -77,7 +79,45 @@ class Player {
     }
 
 	enableTick(y, x) {
-		this.tracks[y].ticks[x] = !this.tracks[y].ticks[x];
+		let track = this.tracks[y];
+		track.ticks[x] = !track.ticks[x];
+
+		// add
+		if (track.ticks[x] === true) {
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// create source
+					let source = this.context.createBufferSource();
+					source.buffer = track.buffer;
+
+					// add to track.sources
+					track.sources[x] = source;
+
+					// add to system
+					// Dry
+					source.connect(track.volumeNode);
+					// Delay
+					source.connect(track.delaySizeNode);
+					// Biquad Filter
+					source.connect(track.biquadFilterNode);
+					// Reverb
+					source.connect(track.reverbGainNode);
+
+                    source.start(startTime);
+				}
+			}
+		} else { // remove
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// stop source
+					let source = track.sources[x];
+					track.sources[x] = undefined;
+					source.stop();
+				}
+			}
+		}
 	}
 
 	create_audio_nodes() {
@@ -156,8 +196,8 @@ class Player {
 			track.reverbGainNode = reverb_gain;
 
 			// connect
-			reverb_gain.connect(this.staticReverb);
-			this.staticReverb.connect(volume);
+			reverb_gain.connect(this.static_reverb);
+			this.static_reverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
@@ -206,8 +246,9 @@ class Player {
     }
 
     play() {
-        this.create_audio_nodes();
         let t = this.context.currentTime + OFFSET;
+		this.lastPlayStartTime = t;
+        this.create_audio_nodes();
 
 		// look for solo tracks
 		let has_solo_tracks = false;
@@ -226,8 +267,6 @@ class Player {
 			if (has_solo_tracks && !track.solod) {
 				continue;
 			}
-
-
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
@@ -257,8 +296,6 @@ class Player {
 
         this.highlightTicks();
     }
-
-
 
     visualizeAudio() {
         let canvas = document.getElementById('audio-visualization-canvas');
@@ -293,24 +330,24 @@ class Player {
             }
             context.lineTo(canvas.width, canvas.height / 2);
             context.stroke();
-
-
         }
 
         draw();
 	}
 
     highlightTicks() {
-        for (let i = 0; i < Track.numberOfTicks; i++) {
-			setTimeout(function () {
+		for (let i = 0; i < Track.numberOfTicks; i++) {
+			let timeout = setTimeout(function () {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid #666");
 				if (i-1 === Track.numberOfTicks)
                     $("#audio-visualization-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
+			this.highlightTickTimeouts.push(timeout);
         }
-        setTimeout(function () {
+        let timeout = setTimeout(function () {
             $(".sample").css("border", "");
+			this.highlightTickTimeouts = [];
         }, (Track.numberOfTicks * INTERVAL + OFFSET) * 1000);
     }
 
@@ -324,10 +361,7 @@ class Player {
 	    this.play();
 
 		// wait for loop
-		let loopTime = 0;
-		for (let j = 0; j < Track.numberOfTicks; j++) {
-			loopTime += INTERVAL;
-		}
+		let loopTime = INTERVAL * Track.numberOfTicks;
 		let that = this;
 		this.loopInterval = setInterval(function() { that.play() }, loopTime * 1000)
 	}
@@ -335,6 +369,25 @@ class Player {
 	stop() {
         $("#loop-button").removeClass("pulse");
         clearInterval(this.loopInterval);
+
+		for (let i in this.highlightTickTimeouts) {
+			let timeout = this.highlightTickTimeouts[i];
+			clearTimeout(timeout);
+		}
+
+		this.highlightTickTimeouts = [];
+		$(".sample").css("border", "");
+
+		// stop audio
+		for (let t in this.tracks) {
+			let track = this.tracks[t];
+			for (let s in track.sources) {
+				if (track.ticks[s] === true) {
+					let source = track.sources[s];
+					source.stop();
+				}
+			}
+		}
 	}
 
 	muteTrack(y) {

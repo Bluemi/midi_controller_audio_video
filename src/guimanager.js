@@ -10,7 +10,7 @@ class GuiManager {
 		    if (this.samples.hasOwnProperty(i)) {
                 let sample = this.samples[i];
                 let div = document.createElement("div");
-                div = $(div).addClass("addableSample");
+                div = $(div).addClass("addableSample z-depth-1");
                 let input = document.createElement("input");
                 input = $(input).attr(
                     { 	id: i,
@@ -36,6 +36,7 @@ class GuiManager {
 			tick.data("yPos", this.yPos);
 			tick.data("xPos", i);
 			tick.data("enabled", false);
+			tick.css("cursor", "pointer");
 			$("#loop-panel").append(tick);
 			$("#cell-" + this.yPos + "-" + i).click(onCellClick);
 
@@ -52,7 +53,6 @@ class GuiManager {
                 player.enableTick($(this).data("yPos"), $(this).data("xPos"));
             }
         }
-
 		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons\">delete</p></div>");
 		removeButton.data("yPos", this.yPos);
 		removeButton.click(onRemoveClick);
@@ -82,6 +82,12 @@ class GuiManager {
         }
 
         let trackInfo = $("<div class=\"track-info\"></div>");
+        trackInfo.data("yPos", this.yPos);
+        let max = 0;
+        $(".track-info").each(function() {
+            max = Math.max(this.id, max);
+        });
+		trackInfo.attr("id", "track-info-"+this.yPos);
         trackInfo.append(removeButton);
 		$("#track-panel").append(trackInfo);
 
@@ -106,24 +112,12 @@ class GuiManager {
         trackInfo.append(muteButton);
 
 		// solo button
-		let soloButton = $("<div id=\"solo-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons\">star</p></div>");
-		soloButton.data("yPos", this.yPos);
-		soloButton.data("solod", false);
-		soloButton.click(onSoloClick);
+		let volumeDisplay = $("<div class=\"track-info-button\"><p class=\"track-info-button-content\">100</p></div>");
+		volumeDisplay.data("yPos", this.yPos);
+        volumeDisplay.attr("id", "volume-display"+this.yPos);
+        volumeDisplay.data("solod", false);
 
-        function onSoloClick() {
-            let t = $(this);
-            player.soloTrack(t.data("yPos"));
-            let solod = !t.data("solod");
-            if (solod) {
-                t.css({background: "#bbbbbb"});
-            } else {
-                t.css({background: "#999999"});
-            }
-            t.data("solod", solod);
-        }
-
-        trackInfo.append(soloButton);
+        trackInfo.append(volumeDisplay);
 
 		// effects
 		for (let i = 0; i < 3; i++) {
@@ -139,7 +133,7 @@ class GuiManager {
 
 				// manage enabling
 				value = (value + 1) % 4;
-				effectClicked(y, x, value / 3);
+				effect_clicked(y, x, value / 3);
 
 				$(this).data("value", value);
 				if (value === 0) {

@@ -57,6 +57,6 @@ function init() {
     });
 }
 
-function effectClicked(y, x, value) {
-	player.effectClicked(y, x, value);
+function effect_clicked(y, x, value) {
+	player.effect_clicked(y, x, value);
 }

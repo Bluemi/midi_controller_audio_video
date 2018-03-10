@@ -20,6 +20,8 @@
 	<script src="src/track.js"></script>
 	<script src="src/guimanager.js"></script>
 	<script src="src/main.js"></script>
+	<script src="src/midicontroller.js"></script>
+	<link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 
@@ -28,7 +30,7 @@
 	<p>Press Add to add a Track.</p>
 </div>
 
-<div id="sample-container" class="card-panel">
+<div id="sample-container" class="card-panel blue-grey">
 	<div id="pre-loader" class="preloader-wrapper big active">
 		<div class="spinner-layer spinner-blue">
 			<div class="circle-clipper left">
@@ -51,7 +53,7 @@
 <!-- Audio Main Group -->
 <div id="audio-main-group">
 	<div>
-		<a id="add-button" class="add btn-floating scale-transition scale-out">
+		<a id="add-button" class="add btn-floating scale-transition scale-out blue-grey">
 			<i class="material-icons">add</i>
 		</a>
 
@@ -61,13 +63,13 @@
 			<div id="effect-panel" class="flex-panel z-depth-1"></div>
 		</div>
 
-		<a id="play-button" class="btn btn-floating bottom-button" onclick="player.play()" disabled>
+		<a id="play-button" class="btn btn-floating bottom-button blue-grey" onclick="player.play()" disabled>
 			<i class="material-icons">play_arrow</i>
 		</a>
-		<a id="loop-button" class="btn btn-floating bottom-button" onclick="player.loop()" disabled>
+		<a id="loop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.loop()" disabled>
 			<i class="material-icons">loop</i>
 		</a>
-		<a id="stop-button" class="btn btn-floating bottom-button" onclick="player.stop()" disabled>
+		<a id="stop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.stop()" disabled>
 			<i class="material-icons">stop</i>
 		</a>
 

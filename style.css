@@ -49,7 +49,6 @@ body {
 	width: 380px;
     flex-wrap: wrap;
 	justify-content: center;
-	background-color: #666;
 	position: relative;
 	left: 50%;
 	transform: translateX(-50%);
@@ -84,6 +83,7 @@ body {
 	width: 30px;
 	vertical-align: middle;
 	text-align: center;
+	cursor: pointer;
 }
 
 .track-info-button {
