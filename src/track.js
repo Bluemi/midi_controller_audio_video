@@ -26,8 +26,8 @@ class Track {
     	}
 
 	effect_clicked(x, value) {
-		//console.log("effect_clicked(): x = " + x + "; value = " + value);
-		if (value == 0) {
+		//console.log("effectClicked(): x = " + x + "; value = " + value);
+		if (value === 0) {
 			this.effect_state[x] = 0;
 			switch (x) {
 				// Delay

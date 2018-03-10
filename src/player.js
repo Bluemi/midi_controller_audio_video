@@ -1,5 +1,6 @@
 const INTERVAL = 0.2;
 const OFFSET = 0.1;
+let currentColor = "#333";
 
 class Player {
 	constructor(context, samples, analyser) {
@@ -11,7 +12,7 @@ class Player {
         this.activeSample = "";
         this.loopInterval = 0;
         this.yPos = 0;
-		this.static_reverb = context.createConvolver();
+		this.staticReverb = context.createConvolver();
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -30,7 +31,7 @@ class Player {
         // Decode asynchronously
         request.onload = function() {
             _player.context.decodeAudioData(request.response, function(buffer) {
-				_player.static_reverb.buffer = buffer;
+				_player.staticReverb.buffer = buffer;
             }, function(e) {alert("error: " + e)});
         };
         request.send();
@@ -60,8 +61,8 @@ class Player {
 		request.send();
 	}	// note: on older systems, may have to use deprecated noteOn(time);
 
-	effect_clicked(y, x, value) {
-		this.tracks[y].effect_clicked(x, value);
+	effectClicked(y, x, value) {
+		this.tracks[y].effectClicked(x, value);
 	}
 
     addTrack() {
@@ -155,8 +156,8 @@ class Player {
 			track.reverbGainNode = reverb_gain;
 
 			// connect
-			reverb_gain.connect(this.static_reverb);
-			this.static_reverb.connect(volume);
+			reverb_gain.connect(this.staticReverb);
+			this.staticReverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
@@ -225,6 +226,8 @@ class Player {
 			if (has_solo_tracks && !track.solod) {
 				continue;
 			}
+
+
             for (let tick = 0; tick < track.ticks.length; tick++) {
 				// start track
                 if (track.ticks[tick] > 0) {
@@ -233,8 +236,29 @@ class Player {
             }
         }
 
+        for (let l = 0; l < Track.numberOfTicks; l++) {
+            let isNewTick = true;
+            for (let m in this.tracks) {
+                let track = this.tracks[m];
+                setTimeout(function () {
+                    if (track.ticks[l] === true) {
+                        currentColor = ColorTools.mergeColor(currentColor, track.sample.color);
+                        isNewTick = false;
+                    } else if (isNewTick === true){
+                        currentColor = "#333";
+                    }
+                }, (OFFSET + l * INTERVAL) * 1000);
+            }
+        }
+
+        setTimeout(function () {
+            currentColor = "#333";
+        }, (OFFSET + Track.numberOfTicks * INTERVAL) * 1000);
+
         this.highlightTicks();
     }
+
+
 
     visualizeAudio() {
         let canvas = document.getElementById('audio-visualization-canvas');
@@ -249,17 +273,17 @@ class Player {
             context.fillStyle = 'rgb(200, 200, 200)';
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.lineWidth = 2;
-            context.strokeStyle = 'rgb(0, 0, 0)';
+            context.strokeStyle = currentColor;
 
             context.beginPath();
             let sliceWidth = canvas.width * 1.0 / bufferLength;
             let x = 0;
-            for(let i = 0; i < bufferLength; i++) {
+            for (let i = 0; i < bufferLength; i++) {
 
                 const v = dataArray[i] / 128.0;
                 const y = v * canvas.height / 2;
 
-                if(i === 0) {
+                if (i === 0) {
                     context.moveTo(x, y);
                 } else {
                     context.lineTo(x, y);
@@ -267,18 +291,20 @@ class Player {
 
                 x += sliceWidth;
             }
-            context.lineTo(canvas.width, canvas.height/2);
+            context.lineTo(canvas.width, canvas.height / 2);
             context.stroke();
+
+
         }
 
         draw();
 	}
 
     highlightTicks() {
-		for (let i = 0; i < Track.numberOfTicks; i++) {
+        for (let i = 0; i < Track.numberOfTicks; i++) {
 			setTimeout(function () {
                 $(".sample").css("border", "");
-				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
+				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid #666");
 				if (i-1 === Track.numberOfTicks)
                     $("#audio-visualization-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);

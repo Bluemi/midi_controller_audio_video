@@ -19,6 +19,7 @@ function init() {
     }
 
     JsonUtils.loadJSON(filePath, function (response) {
+
         // Parse Json string into object
         samples = JSON.parse(response).samples;
         player = new Player(context, samples, analyser);
@@ -26,6 +27,7 @@ function init() {
         guiManager = new GuiManager(player, samples);
         guiManager.addSamplePanel();
 
+        $("#pre-loader").remove();
         $("#add-button").click(function() {
             guiManager.addTrackPanelColumn($(this));
             player.addTrack();
@@ -55,6 +57,6 @@ function init() {
     });
 }
 
-function effect_clicked(y, x, value) {
-	player.effect_clicked(y, x, value);
+function effectClicked(y, x, value) {
+	player.effectClicked(y, x, value);
 }
