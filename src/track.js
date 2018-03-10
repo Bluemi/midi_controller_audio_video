@@ -16,7 +16,7 @@ class Track {
 			this.volumeNode = undefined;
 
 			this.delaySizeNode = undefined;
-			this.delaySize = 0;
+			this.delaySize = 0.33;
 			this.delayValueNode = undefined;
 			this.delayValue = 0;
 			this.biquadFilterNode = undefined;
@@ -89,8 +89,6 @@ class Track {
 		this.delaySize = value;
 		if (! ((typeof this.delaySizeNode) === "undefined")) {
 			this.delaySizeNode.gain.value = value;
-		} else {
-			console.log("NOOOO");
 		}
 	}
 
