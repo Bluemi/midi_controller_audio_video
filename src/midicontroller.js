@@ -70,7 +70,6 @@ function onMidiMessage(event) {
             break;
     }
 /*
-
     console.log("\n" +
         "New Event (on Channel: " + channel + ")==> Type: " + cmd +
         ", Origin: " + btnID +
@@ -95,7 +94,6 @@ function regulateVolume(value) {
     let volume = value / normalMax;
     player.tracks[currentTrackIndex].setVolume(volume);
     $("#volume-display"+currentTrackIndex).find(".track-info-button-content").text(Math.floor(volume*100));
-    //$("#volume-display"+currentTrackIndex).append("<input type='image' id='speaker' src='../res/images/speaker/speaker.svg'/>");
 }
 
 function changeFocusedTrackInfo(value) {
@@ -124,7 +122,6 @@ function regulateReverb(value) {
 }
 
 function regulateDelaySize(value) {
-    //todo: solve visualization problem with size - not visible
     masterEffect(3, value/normalMax)
 }
 
