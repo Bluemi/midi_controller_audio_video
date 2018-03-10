@@ -239,7 +239,7 @@ class Player {
         vid.play();
 
         vid.onended = function () {
-            $(vid).hide();
+			$(vid).hide();
             if (!$(".mpd-video").is(":visible"))
                 $("#audio-visualization-canvas").show();
         }

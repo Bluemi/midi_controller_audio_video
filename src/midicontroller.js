@@ -4,8 +4,6 @@ let trackCount;
 let normalMax = 127;
 
 document.addEventListener('DOMContentLoaded', (event) => {
-    console.log(document.getElementById('result'));
-
     initMidi();
 });
 

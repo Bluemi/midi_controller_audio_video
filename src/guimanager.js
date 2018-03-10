@@ -125,6 +125,23 @@ class GuiManager {
             effect.data("yPos", this.yPos);
             effect.data("x", i);
 			effect.data("value", 0);
+
+			let effectName = "";
+
+			switch (i) {
+                case 0:
+                    effectName = "delay.svg";
+                    break;
+                case 1:
+                    effectName = "biquad-filter.svg";
+                    break;
+                case 2:
+                    effectName = "reverb.svg";
+                    break;
+            }
+
+            effect.append($('<img>',{src:'res/effects/' + effectName})).css("padding", "2px");
+
 			effect.click(function() {
 				const y = $(this).data("yPos");
 				const x = $(this).data("x");
@@ -146,7 +163,7 @@ class GuiManager {
 					$(this).css({ background: "#0066ff"});
 				}
 			});
-			$("#effect-panel").append(effect)
+			$("#effect-panel").append(effect);
 		}
 		this.yPos++;
         addButton.removeClass("scale-in").addClass("scale-out");
