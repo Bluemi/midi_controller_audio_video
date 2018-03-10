@@ -10,11 +10,10 @@ class Player {
         this.tracks = {};
         this.activeSample = "";
         this.loopInterval = 0;
-        this.irHall = 0;
         this.yPos = 0;
-        this.isVideoPlaying = false;
 		this.static_reverb = context.createConvolver();
-		this.connected_reverb_gain = false;
+		this.lastPlayStartTime = 0;
+		this.highlightTickTimeouts = [];
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -79,7 +78,45 @@ class Player {
     }
 
 	enableTick(y, x) {
-		this.tracks[y].ticks[x] = !this.tracks[y].ticks[x];
+		let track = this.tracks[y];
+		track.ticks[x] = !track.ticks[x];
+
+		// add
+		if (track.ticks[x] === true) {
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// create source
+					let source = this.context.createBufferSource();
+					source.buffer = track.buffer;
+
+					// add to track.sources
+					track.sources[x] = source;
+
+					// add to system
+					// Dry
+					source.connect(track.volumeNode);
+					// Delay
+					source.connect(track.delaySizeNode);
+					// Biquad Filter
+					source.connect(track.biquadFilterNode);
+					// Reverb
+					source.connect(track.reverbGainNode);
+
+                    source.start(startTime);
+				}
+			}
+		} else { // remove
+			if (! (this.lastPlayStartTime === 0)) {
+				let startTime = this.lastPlayStartTime + x * INTERVAL;
+				if (startTime > this.context.currentTime) {
+					// stop source
+					let source = track.sources[x];
+					track.sources[x] = undefined;
+					source.stop();
+				}
+			}
+		}
 	}
 
 	create_audio_nodes() {
@@ -181,8 +218,7 @@ class Player {
 	}
 
 	playSample(sampleName) {
-        this.isVideoPlaying = true;
-        $("#my-canvas").hide();
+        $("#audio-visualization-canvas").hide();
 	    let source = this.context.createBufferSource();
         source.buffer = this.bufferManager[sampleName];
         source.connect(this.context.destination);
@@ -200,22 +236,21 @@ class Player {
         vid.currentTime = 0;
         vid.play();
 
-        vid.onended = function (e) {
+        vid.onended = function () {
             $(vid).hide();
-            $("#my-canvas").show();
-            this.isVideoPlaying = false;
+            if (!$(".mpd-video").is(":visible"))
+                $("#audio-visualization-canvas").show();
         }
     }
 
     play() {
-	    if (!this.isVideoPlaying)
-	        $("#my-canvas").show();
         let t = this.context.currentTime + OFFSET;
+		this.lastPlayStartTime = t;
         this.create_audio_nodes();
 
 		// look for solo tracks
 		let has_solo_tracks = false;
-		for (let k in this.tracks) {
+        for (let k in this.tracks) {
 			if (this.tracks[k].solod) {
 				has_solo_tracks = true;
 				break;
@@ -242,14 +277,14 @@ class Player {
     }
 
     visualizeAudio() {
-        let canvas = document.getElementById('my-canvas');
+        let canvas = document.getElementById('audio-visualization-canvas');
         let context = canvas.getContext('2d');
 
         let bufferLength = analyser.frequencyBinCount;
         let dataArray = new Uint8Array(bufferLength);
 
         function draw() {
-            let drawVisual = requestAnimationFrame(draw);
+            requestAnimationFrame(draw);
             analyser.getByteTimeDomainData(dataArray);
             context.fillStyle = 'rgb(200, 200, 200)';
             context.fillRect(0, 0, canvas.width, canvas.height);
@@ -281,15 +316,17 @@ class Player {
 
     highlightTicks() {
 		for (let i = 0; i < Track.numberOfTicks; i++) {
-			setTimeout(function () {
+			let timeout = setTimeout(function () {
                 $(".sample").css("border", "");
 				$("[id^=cell-][id$=-" + i+ "]").css("border", "2px solid green");
 				if (i-1 === Track.numberOfTicks)
-                    $("#my-canvas").hide();
+                    $("#audio-visualization-canvas").hide();
             }, (i * INTERVAL + OFFSET) * 1000);
+			this.highlightTickTimeouts.push(timeout);
         }
-        setTimeout(function () {
+        let timeout = setTimeout(function () {
             $(".sample").css("border", "");
+			this.highlightTickTimeouts = [];
         }, (Track.numberOfTicks * INTERVAL + OFFSET) * 1000);
     }
 
@@ -302,16 +339,32 @@ class Player {
 		this.play();
 
 		// wait for loop
-		let loopTime = 0;
-		for (let j = 0; j < Track.numberOfTicks; j++) {
-			loopTime += INTERVAL;
-		}
+		let loopTime = INTERVAL * Track.numberOfTicks;
 		let that = this;
 		this.loopInterval = setInterval(function() { that.play() }, loopTime * 1000)
 	}
 
 	stop() {
 		clearInterval(this.loopInterval);
+
+		for (let i in this.highlightTickTimeouts) {
+			let timeout = this.highlightTickTimeouts[i];
+			clearTimeout(timeout);
+		}
+
+		this.highlightTickTimeouts = [];
+		$(".sample").css("border", "");
+
+		// stop audio
+		for (let t in this.tracks) {
+			let track = this.tracks[t];
+			for (let s in track.sources) {
+				if (track.ticks[s] === true) {
+					let source = track.sources[s];
+					source.stop();
+				}
+			}
+		}
 	}
 
 	muteTrack(y) {

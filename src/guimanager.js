@@ -137,7 +137,6 @@ class GuiManager {
 		}
 		this.yPos++;
 		addButton.prop("disabled", true);
-		Player.hideAllVids();
 	}
 
 	static getRandomLightColor() {
