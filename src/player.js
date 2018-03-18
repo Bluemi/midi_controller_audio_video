@@ -140,7 +140,11 @@ class Player {
 			track.volumeNode = volume;
 
 			// settings
-			volume.gain.value = track.volume;
+			if (track.muted) {
+				volume.gain.value = 0;
+			} else  {
+				volume.gain.value = track.volume;
+			}
 
 			// connect
 			volume.connect(this.analyser);
@@ -282,9 +286,6 @@ class Player {
 
         for (let k in this.tracks) {
             let track = this.tracks[k];
-			if (track.muted) {
-				continue;
-			}
 			if (has_solo_tracks && !track.solod) {
 				continue;
 			}

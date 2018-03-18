@@ -72,6 +72,11 @@ class Track {
 
 	mute() {
 		this.muted = !this.muted;
+		if (this.muted) {
+			this.volumeNode.gain.value = 0;
+		} else {
+			this.volumeNode.gain.value = this.volume;
+		}
 	}
 
 	solo() {
