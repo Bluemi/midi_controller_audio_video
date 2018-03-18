@@ -15,6 +15,7 @@ class Player {
 		this.static_reverb = context.createConvolver();
 		this.lastPlayStartTime = 0;
 		this.highlightTickTimeouts = [];
+		this.isPlaying = false;
 
         for (let i in samples) {
         	if (samples.hasOwnProperty(i)) {
@@ -245,6 +246,26 @@ class Player {
         }
     }
 
+	startPlay() {
+		if (this.isPlaying) {
+			return;
+		}
+		this.isPlaying = true;
+		this.play();
+		let _player = this;
+        setTimeout(function () {
+        	_player.isPlaying = false;
+        }, (OFFSET + Track.numberOfTicks * INTERVAL) * 1000);
+	}
+
+	startLoop() {
+		if (this.isPlaying) {
+			return
+		}
+		this.isPlaying = true;
+		this.loop()
+	}
+
     play() {
         let t = this.context.currentTime + OFFSET;
 		this.lastPlayStartTime = t;
@@ -388,6 +409,8 @@ class Player {
 				}
 			}
 		}
+
+		this.isPlaying = false;
 	}
 
 	muteTrack(y) {
