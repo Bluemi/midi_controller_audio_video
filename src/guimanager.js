@@ -53,7 +53,7 @@ class GuiManager {
                 player.enableTick($(this).data("yPos"), $(this).data("xPos"));
             }
         }
-		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons\">delete</p></div>");
+		let removeButton = $("<div id=\"remove-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons blue-grey z-depth-1\">delete</p></div>");
 		removeButton.data("yPos", this.yPos);
 		removeButton.click(onRemoveClick);
 
@@ -92,7 +92,7 @@ class GuiManager {
 		$("#track-panel").append(trackInfo);
 
 		// mute button
-		let muteButton = $("<div id=\"mute-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons\">volume_off</p></div>");
+		let muteButton = $("<div id=\"mute-button\" class=\"track-info-button\"><p class=\"track-info-button-content material-icons blue-grey z-depth-1\">volume_up</p></div>");
 		muteButton.data("yPos", this.yPos);
 		muteButton.data("muted", false);
 		muteButton.click(onMuteClick);
@@ -102,9 +102,9 @@ class GuiManager {
             player.muteTrack(t.data("yPos"));
             let muted = !t.data("muted");
             if (muted) {
-                t.css({background: "#bbbbbb"});
+                t.children("p").text("volume_off");
             } else {
-                t.css({background: "#999999"});
+                t.children("p").text("volume_up");
             }
             t.data("muted", muted);
         }
@@ -112,10 +112,21 @@ class GuiManager {
         trackInfo.append(muteButton);
 
 		// solo button
-		let volumeDisplay = $("<div class=\"track-info-button\"><p class=\"track-info-button-content\">100</p></div>");
+		let volumeDisplay = $("<div class=\"track-info-button\"><p class=\"track-info-button-content blue-grey z-depth-1\">100</p></div>");
 		volumeDisplay.data("yPos", this.yPos);
         volumeDisplay.attr("id", "volume-display"+this.yPos);
         volumeDisplay.data("solod", false);
+        volumeDisplay.click(onVolumeClick);
+
+        function onVolumeClick() {
+            let volume = volumeDisplay.text();
+            volume = Math.floor(volume/ 10) * 10 + 10;
+            volume = volume > 100 ? 10 : volume;
+
+            let y = volumeDisplay.data("yPos");
+            player.tracks[y].setVolume(volume / 127);
+            volumeDisplay.children("p").text(volume);
+        }
 
         trackInfo.append(volumeDisplay);
 

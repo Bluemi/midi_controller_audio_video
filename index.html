@@ -25,57 +25,83 @@
 </head>
 <body>
 
-<div class="text-center">
-	<h1>Boom Loop</h1>
-	<h5>Let's start making some sweet beats, shall we?</h5>
-</div>
-
-<div id="sample-container" class="card-panel blue-grey">
-    <div id="pre-loader" class="preloader-wrapper big active">
-        <div class="spinner-layer spinner-red-only">
-            <div class="circle-clipper left">
-                <div class="circle"></div>
-            </div><div class="gap-patch">
-            <div class="circle"></div>
-        </div><div class="circle-clipper right">
-            <div class="circle"></div>
-        </div>
-        </div>
-    </div>
-</div>
-<!-- Visualisation Screen -->
-<div id="visualisation-screen" class="z-depth-1">
-	<canvas id="audio-visualization-canvas" width="320px" height="240px"></canvas>
-</div>
-
-<!-- Audio Main Group -->
-<div id="audio-main-group">
-	<div>
-		<a id="add-button" class="add btn-floating scale-transition scale-out blue-grey">
-			<i class="material-icons">add</i>
-		</a>
-
-		<div id="body-panel-group">
-			<div id="track-panel" class="flex-panel z-depth-1"></div>
-			<div id="loop-panel" class="flex-panel z-depth-1"> </div>
-			<div id="effect-panel" class="flex-panel z-depth-1"></div>
-		</div>
-
-		<a id="play-button" class="btn btn-floating bottom-button blue-grey" onclick="player.startPlay()" disabled>
-			<i class="material-icons">play_arrow</i>
-		</a>
-		<a id="loop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.startLoop()" disabled>
-			<i class="material-icons">loop</i>
-		</a>
-		<a id="stop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.stop()" disabled>
-			<i class="material-icons">stop</i>
-		</a>
-
+	<div class="text-center">
+		<h1>Boom Loop</h1>
+		<h5>Let's start making some sweet beats, shall we?</h5>
 	</div>
-</div>
 
-<div style="width: 200px; font-size: 10px; margin-top: 50px">Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
+	<div id="sample-container" class="card-panel blue-grey none-selectable">
+		<div id="pre-loader" class="preloader-wrapper big active">
+			<div class="spinner-layer spinner-red-only">
+				<div class="circle-clipper left">
+					<div class="circle"></div>
+				</div><div class="gap-patch">
+				<div class="circle"></div>
+			</div><div class="circle-clipper right">
+				<div class="circle"></div>
+			</div>
+			</div>
+		</div>
+	</div>
+	<!-- Visualisation Screen -->
+	<div id="visualisation-screen" class="z-depth-1">
+		<canvas id="audio-visualization-canvas" width="320px" height="240px"></canvas>
+	</div>
 
+	<!-- Audio Main Group -->
+	<div id="audio-main-group">
+		<div>
+			<a id="add-button" class="add btn-floating scale-transition scale-out blue-grey">
+				<i class="material-icons">add</i>
+			</a>
 
+			<div id="body-panel-group">
+				<div id="track-panel" class="none-selectable flex-panel z-depth-1"></div>
+				<div id="loop-panel" class="none-selectable flex-panel z-depth-1"> </div>
+				<div id="effect-panel" class="none-selectable flex-panel z-depth-1"></div>
+			</div>
+
+			<a id="play-button" class="btn btn-floating bottom-button blue-grey" onclick="player.startPlay()"
+			   disabled>
+				<i class="material-icons">play_arrow</i>
+			</a>
+			<a id="loop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.startLoop()"
+			   disabled>
+				<i class="material-icons">loop</i>
+			</a>
+			<a id="stop-button" class="btn btn-floating bottom-button blue-grey" onclick="player.stop()" disabled>
+				<i class="material-icons">stop</i>
+			</a>
+		</div>
+	</div>
 </body>
+<footer class="page-footer blue-grey" style="margin-top: 40px;">
+	<div class="container">
+		<div class="row">
+			<div class="col l6 s12">
+				<h5 class="white-text">Boom Loop</h5>
+				<p class="grey-text text-lighten-4">By R. Wegner-Repke, B. Schilling, P. Bönsch</p>
+				<a href="https://github.com/Bluemi/midi_controller_audio_video"><img src="res/links/github.svg"/></a>
+			</div>
+			<div class="col l4 offset-l2 s12">
+				<h5 class="white-text">Links</h5>
+				<ul>
+					<li><a class="grey-text text-lighten-3" href="http://www.freepik.com">Icons made by Freepik</a></li>
+					<li><a class="grey-text text-lighten-3" href="https://www.flaticon.com/">And Flaticon which is licensed by </a> <a class="grey-text text-lighten-3" href="http://creativecommons.org/licenses/by/3.0/">CC 3.0 BY</a></li>
+					<li><a class="grey-text text-lighten-3" href="http://materializecss.com">Design by Materialize</a></li>
+					<li><a class="grey-text text-lighten-3" href="https://webaudio.github.io/web-audio-api/">Web Audio Api for sound and audio visualisation</a></li>
+					<li><a class="grey-text text-lighten-3" href="https://github.com/Dash-Industry-Forum/dash.js/wiki">DashJS for loading videos </a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="footer-copyright">
+		<div class="container">
+			2018 - HTW Berlin
+			<div class="right">
+				Multimedia Audio- und Videotechnik
+			</div>
+		</div>
+	</div>
+</footer>
 </html>

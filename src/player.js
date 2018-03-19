@@ -224,7 +224,7 @@ class Player {
 	}
 
 	playSample(sampleName) {
-        $("#audio-visualization-canvas").hide();
+		$("#audio-visualization-canvas").hide();
         $("#add-button").addClass("scale-in").removeClass("scale-out");
 
         let source = this.context.createBufferSource();
