@@ -67,12 +67,6 @@ function onMidiMessage(event) {
         default:
             break;
     }
-/*
-    console.log("\n" +
-        "New Event (on Channel: " + channel + ")==> Type: " + cmd +
-        ", Origin: " + btnID +
-        ", Value: " + value);
-*/
 }
 
 function clickNewButton(direction) {

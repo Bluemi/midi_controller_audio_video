@@ -50,8 +50,14 @@ function init() {
                 if (event.keyCode === 65) {
                     let aBtn = $("#add-button");
                     if (aBtn.hasClass("scale-in")) {
-                        guiManager.addTrackPanelColumn(aBtn);
-                        player.addTrack();
+                        aBtn.click();
+                        //guiManager.addTrackPanelColumn(aBtn);
+                        //player.addTrack();
+                    }
+                } else if (event.keyCode === 80) {
+                    let pBtn = $("#play-button");
+                    if (!pBtn.prop("disabled")) {
+                        pBtn.click();
                     }
                 }
             });
