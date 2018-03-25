@@ -157,7 +157,7 @@ function visualizeEffectByColor(effectIndex, value) {
     let index = $currentTrackInfoFocus.data("yPos");
     $('#effect-panel > .effect').each(function () {
         if ($(this).data("yPos") === index && $(this).data("x") === effectIndex) {
-            $(this).css("background-color", changeCSSColorHSL(180, value*100, 250));
+            $(this).css("background-color", changeCSSColorHSL(180, value*100, 240));
         }
     });
 
@@ -168,7 +168,7 @@ function changeCSSColorHSL(start, percentage, end) {
         y = (end - start) * x,
         z = y + start;
 
-    let l = 100 - (percentage * 50 / 100);
+    let l = 100 - (percentage * 60 / 100);
 
     return 'hsl('+z+', 100%, '+l+'%)';
 }
