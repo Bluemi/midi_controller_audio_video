@@ -323,7 +323,7 @@ class Player {
         function draw() {
             requestAnimationFrame(draw);
             analyser.getByteTimeDomainData(dataArray);
-            context.fillStyle = 'rgb(200, 200, 200)';
+            context.fillStyle = 'rgb(0, 0, 0)';
             context.fillRect(0, 0, canvas.width, canvas.height);
             context.lineWidth = 2;
             context.strokeStyle = currentColor;
