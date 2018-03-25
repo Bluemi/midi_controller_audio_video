@@ -1,5 +1,5 @@
 class Track {
-	constructor(title, buffer, rev) {
+	constructor(title, buffer, rev, vol) {
         	this.title = title;
 			this.ticks = [];
 			this.sample = {};
@@ -13,7 +13,7 @@ class Track {
 			this.solod = false;
 
 			this.volume = 1;
-			this.volumeNode = undefined;
+			this.volumeNode = vol;
 
 			this.delaySizeNode = undefined;
 			this.delaySize = 0.33;
@@ -24,7 +24,8 @@ class Track {
 			this.reverbGainNode = undefined;
 			this.reverbGain = 0;
 
-			this.static_reverb = rev
+			this.static_reverb = rev;
+			this.static_reverb.connect(this.volumeNode);
     	}
 
 	effect_clicked(x, value) {

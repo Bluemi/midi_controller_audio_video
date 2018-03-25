@@ -70,8 +70,10 @@ class Player {
 
     addTrack() {
 		let rev = this.context.createConvolver();
+		let vol = this.context.createGain();
+		vol.connect(this.analyser);
 		rev.buffer = this.reverb_buffer;
-        this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample], rev);
+        this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample], rev, vol);
         this.tracks[this.yPos].sample = samples.find(s => s.title === this.activeSample);
 		this.activeSample = "";
         this.yPos++;
@@ -134,25 +136,13 @@ class Player {
 				track.sources.push(source);
 			}
 
-			// Volume ------------------------------------------------
-			// create
-			let volume = this.context.createGain();
-
-			// set track nodes
-			if (typeof track.volumeNode != "undefined") {
-				track.volumeNode.gain.value = 0
-			}
-			track.volumeNode = volume;
-
 			// settings
 			if (track.muted) {
-				volume.gain.value = 0;
+				track.volumeNode.gain.value = 0;
 			} else  {
-				volume.gain.value = track.volume;
+				track.volumeNode.gain.value = track.volume;
 			}
 
-			// connect
-			volume.connect(this.analyser);
 
 			// Delay -------------------------------------------------
 			// create
@@ -174,7 +164,7 @@ class Player {
 			delay_size.connect(delay);
 			delay.connect(delay_size);
 			delay.connect(delay_value);
-			delay_value.connect(volume);
+			delay_value.connect(track.volumeNode);
 
 			// Biquad Filter -----------------------------------------
 			// create
@@ -193,7 +183,7 @@ class Player {
 
 			// connect
 			biquadFilter.connect(gainNode);
-			gainNode.connect(volume);
+			gainNode.connect(track.volumeNode);
 
 			// Reverb --------------------------------------------
 			// create
@@ -207,14 +197,13 @@ class Player {
 
 			// connect
 			reverb_gain.connect(track.static_reverb);
-			track.static_reverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
 				let src = track.sources[s];
 
 				// Dry
-				src.connect(volume);
+				src.connect(track.volumeNode);
 
 				// Delay
 				src.connect(delay_size);
