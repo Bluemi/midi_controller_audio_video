@@ -1,5 +1,5 @@
 {
-  "name": "boom loop",
+  "name": "boomloop",
   "version": "1.0.0",
   "description": "A nice and fancy drum machine build with javascript, the web audio api, dash.js and materializecss for the front-end design. Start jammin'!",
   "main": "src/main.js",
