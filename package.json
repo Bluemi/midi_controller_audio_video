@@ -1,7 +1,7 @@
 {
-  "name": "boom_box",
+  "name": "boom loop",
   "version": "1.0.0",
-  "description": "nice",
+  "description": "A nice and fancy drum machine build with javascript, the web audio api, dash.js and materializecss for the front-end design. Start jammin'!",
   "main": "src/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
