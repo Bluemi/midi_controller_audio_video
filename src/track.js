@@ -1,5 +1,5 @@
 class Track {
-	constructor(title, buffer) {
+	constructor(title, buffer, rev) {
         	this.title = title;
 			this.ticks = [];
 			this.sample = {};
@@ -23,6 +23,8 @@ class Track {
 			this.biquadFilterFrequency = 0;
 			this.reverbGainNode = undefined;
 			this.reverbGain = 0;
+
+			this.static_reverb = rev
     	}
 
 	effect_clicked(x, value) {
@@ -61,7 +63,7 @@ class Track {
 					break;
 				// Hall
 				case 2:
-					this.setReverbValue(value * 0.03);
+					this.setReverbValue(value * 0.3);
 					break;
 				default:
 					console.log("unknown x: " + x);

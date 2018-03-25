@@ -12,7 +12,7 @@ class Player {
         this.activeSample = "";
         this.loopInterval = 0;
         this.yPos = 0;
-		this.static_reverb = context.createConvolver();
+		this.reverb_buffer;
 		this.lastPlayStartTime = 0;
 		this.highlightTickTimeouts = [];
 		this.isPlaying = false;
@@ -34,7 +34,7 @@ class Player {
         // Decode asynchronously
         request.onload = function() {
             _player.context.decodeAudioData(request.response, function(buffer) {
-				_player.static_reverb.buffer = buffer;
+				_player.reverb_buffer = buffer;
             }, function(e) {alert("error: " + e)});
         };
         request.send();
@@ -69,7 +69,9 @@ class Player {
 	}
 
     addTrack() {
-        this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample]);
+		let rev = this.context.createConvolver();
+		rev.buffer = this.reverb_buffer;
+        this.tracks[this.yPos] = new Track(this.activeSample, this.bufferManager[this.activeSample], rev);
         this.tracks[this.yPos].sample = samples.find(s => s.title === this.activeSample);
 		this.activeSample = "";
         this.yPos++;
@@ -137,6 +139,9 @@ class Player {
 			let volume = this.context.createGain();
 
 			// set track nodes
+			if (typeof track.volumeNode != "undefined") {
+				track.volumeNode.gain.value = 0
+			}
 			track.volumeNode = volume;
 
 			// settings
@@ -201,8 +206,8 @@ class Player {
 			track.reverbGainNode = reverb_gain;
 
 			// connect
-			reverb_gain.connect(this.static_reverb);
-			this.static_reverb.connect(volume);
+			reverb_gain.connect(track.static_reverb);
+			track.static_reverb.connect(volume);
 
 			// connect sources
 			for (let s in track.sources) {
