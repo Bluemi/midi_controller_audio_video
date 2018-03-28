@@ -5,7 +5,7 @@ class DashUtils {
             if (samples.hasOwnProperty(i)) {
                 let sampleName = samples[i].title;
                 let mediaPlayer = dashjs.MediaPlayer().create();
-                mediaPlayer.getDebug().setLogToBrowserConsole(false);
+                //mediaPlayer.getDebug().setLogToBrowserConsole(false);
                 let vid = $("<video autoplay hidden muted class='mpd-video' id='vid-" + sampleName + "'></video>")
                     .bind("loadeddata", () => {
                         loadedDataCount++;
